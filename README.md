@@ -32,6 +32,7 @@
 ![image](https://user-images.githubusercontent.com/65356678/220564496-23cdf551-716b-4932-b47b-ecebdb8abe4e.png)
 
    It consists of options in two sections:
+    
     a) this consists of various button for following: 
         - Add or increase positive charge on atom/molecule. 
         - Add or increase negative charge on aton/molecule. 
