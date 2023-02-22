@@ -32,7 +32,14 @@
 ![image](https://user-images.githubusercontent.com/65356678/220564496-23cdf551-716b-4932-b47b-ecebdb8abe4e.png)
 
    It consists of options in two sections:
-    a) this consists of various button for following: - Add or increase positive charge on atom/molecule. - Add or increase negative charge on aton/molecule. - Add a lone pair. - Add 2 lone pairs. - Add 3 lone pairs. - Remove atom or group.
+    a) this consists of various button for following: 
+        - Add or increase positive charge on atom/molecule. 
+        - Add or increase negative charge on aton/molecule. 
+        - Add a lone pair. 
+        - Add 2 lone pairs. 
+        - Add 3 lone pairs. 
+        - Remove atom or group.
+        
     b) Add atom or group.
 
    At the bottom of the dialog box there is a button to change order of atoms.
