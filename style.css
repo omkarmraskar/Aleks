@@ -1,0 +1,11 @@
+
+svg{
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: auto;
+    height: 400px;
+    width: 600px;
+    border: 1px solid black;
+}
