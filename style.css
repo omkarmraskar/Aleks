@@ -1,10 +1,20 @@
-
+.svg-wrap > span{
+    position: absolute;
+    left: 150px;
+    width: 300px;
+    top: 200px;
+    font-family: Verdana;
+    font-style: normal;
+    font-size: 16px;
+    font-weight: bold;
+    color: rgb(121, 121, 121);
+    text-align: center;
+    transform: translate(0px, -50%);
+}
 svg{
-    display: block;
     position: fixed;
     top: 0;
     left: 0;
-    margin: auto;
     height: 400px;
     width: 600px;
     border: 1px solid black;

@@ -10,9 +10,11 @@
 **Following Things Are used to draw lines**
 
 - mousedown event listener to get starting point of line
-- mouseup event to get ending point of line
+- mousemove to dynamically show the line. 
+- mouseup event to get ending point of line and stop drawing
 - Paint line using a function inside mouseup event listener as follows:
    * create a namespace element line
    * set initial (x1, y1) and final (x2, y2) position as attribute
+   * select current line using lastChild selector and update final position of line until mouseup event is triggered
    * set style attribute to give stroke width and color.
    * finally append line element to our drawing board
