@@ -1,4 +1,6 @@
 
+const threshold = 20;
+
 const board = document.querySelector("svg");
 const boardText = document.getElementById("text");
 const mode = document.getElementById("mode-select");
@@ -35,11 +37,11 @@ function start(event){
             const y2Other = lines[i].getAttribute("y2");
             const distanceStart = Math.sqrt((x1 - x1Other) ** 2 + (y1 - y1Other) ** 2);
             const distanceEnd = Math.sqrt((x1 - x2Other) ** 2 + (y1 - y2Other) ** 2);
-            if (distanceStart < 20) {
+            if (distanceStart < threshold) {
                 line.setAttribute("x1", x1Other);
                 line.setAttribute("y1", y1Other);
             }
-            if (distanceEnd < 20) {
+            if (distanceEnd < threshold) {
                 line.setAttribute("x1", x2Other);
                 line.setAttribute("y1", y2Other);
               }
@@ -74,11 +76,11 @@ function draw(event){
             const y2Other = lines[i].getAttribute("y2");
             const distanceStart = Math.sqrt((x2 - x1Other) ** 2 + (y2 - y1Other) ** 2);
             const distanceEnd = Math.sqrt((x2 - x2Other) ** 2 + (y2 - y2Other) ** 2);
-            if (distanceStart < 20) {
+            if (distanceStart < threshold) {
                 line.setAttribute("x2", x1Other);
                 line.setAttribute("y2", y1Other);
             }
-            if (distanceEnd < 20) {
+            if (distanceEnd < threshold) {
                 line.setAttribute("x2", x2Other);
                 line.setAttribute("y2", y2Other);
             }
