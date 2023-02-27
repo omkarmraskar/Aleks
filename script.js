@@ -1,5 +1,5 @@
 
-const threshold = 20;
+const threshold = 10;
 
 const board = document.querySelector("svg");
 const boardText = document.getElementById("text");
@@ -46,7 +46,6 @@ function start(event){
                 line.setAttribute("y1", y2Other);
               }
         }
-        line.setAttribute('style', "stroke:rgb(0,0,0);stroke-width:2")
         board.appendChild(line);
     }
     else if(mode.value === 'eraser'){
@@ -89,7 +88,7 @@ function draw(event){
     }
 }
 
-function stop(){
+function stop(event){
     isPainting = false;
     isErasing = false;
     const emptyLine = document.querySelectorAll("line");
@@ -101,6 +100,16 @@ function stop(){
     if(!board.hasChildNodes()){
         boardText.setAttribute('style', '');
     }
+
+    const element = document.elementFromPoint(event.clientX, event.clientY);
+        if(element.tagName === 'line'){
+            element.addEventListener('mouseenter', () => {
+                element.classList.add('highlight');
+            });
+            element.addEventListener('mouseleave', () => {
+                element.classList.remove('highlight');
+            });
+        }
 }
 
 function handleModeChange() {

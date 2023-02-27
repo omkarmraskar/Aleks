@@ -22,3 +22,11 @@ svg{
     width: 600px;
     border: 1px solid black;
 }
+svg > line{
+    stroke:rgb(0,0,0);
+    stroke-width:2;
+    stroke-linecap: round;
+}
+.highlight{
+    stroke: red;
+}
