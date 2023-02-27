@@ -48,7 +48,12 @@ function draw(event){
 function stop(){
     isPainting = false;
     isErasing = false;
-    
+    const emptyLine = document.querySelectorAll("line");
+    for(let i=0; i<emptyLine.length; i++){
+        if(emptyLine[i].getTotalLength() === 0){
+            emptyLine[i].remove();
+        }
+    }
     if(!board.hasChildNodes()){
         boardText.setAttribute('style', '');
     }
