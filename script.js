@@ -59,6 +59,17 @@ function start(event){
 }
 
 function draw(event){
+    if(mode.value === 'eraser'){
+        const element = document.elementFromPoint(event.clientX, event.clientY);
+        if(element.tagName === 'line'){
+            element.addEventListener('mouseover', () => {
+                element.classList.add('highlight');
+            });
+            element.addEventListener('mouseleave', () => {
+                element.classList.remove('highlight');
+            });
+        }
+    }
     if(isPainting === false) return;
     else if(isPainting === true){
         boardText.setAttribute('style', 'display: none;');
@@ -75,11 +86,11 @@ function draw(event){
             const y2Other = lines[i].getAttribute("y2");
             const distanceStart = Math.sqrt((x2 - x1Other) ** 2 + (y2 - y1Other) ** 2);
             const distanceEnd = Math.sqrt((x2 - x2Other) ** 2 + (y2 - y2Other) ** 2);
-            if (distanceStart < threshold) {
+            if (distanceStart <= threshold) {
                 line.setAttribute("x2", x1Other);
                 line.setAttribute("y2", y1Other);
             }
-            if (distanceEnd < threshold) {
+            if (distanceEnd <= threshold) {
                 line.setAttribute("x2", x2Other);
                 line.setAttribute("y2", y2Other);
             }
@@ -100,16 +111,6 @@ function stop(event){
     if(!board.hasChildNodes()){
         boardText.setAttribute('style', '');
     }
-
-    const element = document.elementFromPoint(event.clientX, event.clientY);
-        if(element.tagName === 'line'){
-            element.addEventListener('mouseenter', () => {
-                element.classList.add('highlight');
-            });
-            element.addEventListener('mouseleave', () => {
-                element.classList.remove('highlight');
-            });
-        }
 }
 
 function handleModeChange() {

@@ -1,11 +1,13 @@
 ﻿
-# Day 3
+# Day 4
 
-### Add an eraser to remove existing lines 
+### Snap together endpoints of two lines if close together 
 
-1) Create Mode Selector using select tag to switch between pencil and eraser
-2) In JS select Mode Selector using querySelector.
-3) When an Event is called check the value of mode selector to choose between pencil and erasor
-4) when eraser is selecter set isPainting to false and isErasing to true
-5) get the element using elementFromPoing to get the element
-6) check if element tag === line. if true remove the element.
+1) Snap together lines
+    - Calculate distance between old line and new line using distance formula
+    - if distance is less than certain value set attributes of new values same as old.
+
+2) Highlight line while using eraser
+    - add highlight class when mouse enter line
+    - remove highlight class when mouse leaves line
+    - set stroke as different color to class highlight
