@@ -51,10 +51,10 @@ function start(event){
     else if(mode.value === 'eraser'){
         isErasing = true;
         isPainting = false;
-        const element = document.elementFromPoint(event.clientX, event.clientY);
-        if(element.tagName === 'line'){
-            element.remove();
-        }
+            const element = document.elementFromPoint(event.clientX, event.clientY);
+            if(element.tagName === 'line'){
+                element.remove();
+            }
     }
 }
 
