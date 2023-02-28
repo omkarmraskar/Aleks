@@ -2,7 +2,7 @@
 const threshold = 10;
 
 const board = document.querySelector("svg");
-const boardText = document.getElementById("text");
+const boardText = document.getElementById("board-text");
 const mode = document.getElementById("mode-select");
 const svgRect = board.getBoundingClientRect();
 
@@ -29,7 +29,7 @@ function start(event){
         line.setAttribute('x2', x2);
         line.setAttribute('y2', y2);
 
-        const lines = document.querySelectorAll('line');
+        const lines = board.querySelectorAll('line');
         for(let i=0; i<lines.length; i++){
             const x1Other = lines[i].getAttribute("x1");
             const y1Other = lines[i].getAttribute("y1");
@@ -102,7 +102,7 @@ function draw(event){
 function stop(event){
     isPainting = false;
     isErasing = false;
-    const emptyLine = document.querySelectorAll("line");
+    const emptyLine = board.querySelectorAll("line");
     for(let i=0; i<emptyLine.length; i++){
         if(emptyLine[i].getTotalLength() === 0){
             emptyLine[i].remove();
