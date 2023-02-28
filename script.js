@@ -1,119 +1,138 @@
 
-const threshold = 10;
+class Draw{
+    constructor(id){
+        this.element = document.getElementById(id);
+        this.shapes = [];
+        this.currentShape = null; 
+        this.mode = "pencil";
 
-const board = document.querySelector("svg");
-const boardText = document.getElementById("text");
-const mode = document.getElementById("mode-select");
-const svgRect = board.getBoundingClientRect();
+        const selectTag = document.getElementById("mode-select");
+            selectTag.addEventListener("change", (event) => {
+                this.mode = event.target.value;
+        });
 
-var isPainting = false;
-var isErasing = false;
+        this.element.addEventListener("mousedown", (event) => {
+            if (this.mode === 'pencil') {
+              this.startShape(event.offsetX, event.offsetY);
+            } else if (this.mode === 'eraser') {
+              this.eraseShapes(event.clientX, event.clientY);
+            }
+          });
+        this.element.addEventListener("mousemove", (event) => {
+            if(this.mode === 'pencil'){
+                this.updateShape(event.offsetX, event.offsetY);
+            }
+            else if (this.mode === 'eraser'){
+              this.highlightLines(event.offsetX, event.offsetY);
+            }
+        });
+        this.element.addEventListener("mouseup", (event) => {
+            this.endShape();
+        });
+    }
+    highlightLines(x, y){
+      const element = document.elementFromPoint(x, y);
+      if(element.tagName === 'line'){
+          element.addEventListener('mouseover', () => {
+              element.classList.add('highlight');
+          });
+          element.addEventListener('mouseleave', () => {
+              element.classList.remove('highlight');
+          });
+      }
+    }
+    startShape(x, y) {
+        this.currentShape = new Shape(x, y);
+        this.element.appendChild(this.currentShape.element);
+    }
+    updateShape(x, y) {
+        if (this.currentShape !== null) {
+          this.currentShape.addPoint(x, y);
+        }
+    }
+    endShape() {
+        if (this.currentShape !== null) {
+          this.shapes.push(this.currentShape);
+          this.currentShape = null;
+        }
+    }
+    eraseShapes(x, y) {
+      const shapeElementsToRemove = [];
+    
+      for (const shape of this.shapes) {
+        const element = document.elementFromPoint(x, y);
+        if (element === shape.element) {
+          shapeElementsToRemove.push(element);
+        }
+      }
+    
+      for (const element of shapeElementsToRemove) {
+        element.remove();
+        const index = this.shapes.findIndex(shape => shape.element === element);
+        if (index !== -1) {
+          this.shapes.splice(index, 1);
+        }
+      }
+    }
+    
+}
 
-board.addEventListener("mousedown", start)
-board.addEventListener("mouseup", stop);
-board.addEventListener("mousemove", draw);
+class Shape {
+    constructor(x, y) {
+        
+        this.element = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        this.element.setAttribute("x1", x);
+        this.element.setAttribute("y1", y);
+        this.element.setAttribute("x2", x);
+        this.element.setAttribute("y2", y);
 
-mode.addEventListener('change', handleModeChange);
+        this.boardText = document.getElementById('board-text');
+        const lines = document.querySelectorAll('line')
+        for(let i=0; i<lines.length; i++){  
+            const x1Other = lines[i].getAttribute("x1");
+            const y1Other = lines[i].getAttribute("y1");
+            const x2Other = lines[i].getAttribute("x2");
+            const y2Other = lines[i].getAttribute("y2");
+            const distanceStart = Math.sqrt((x - x1Other) ** 2 + (y - y1Other) ** 2);
+            const distanceEnd = Math.sqrt((x - x2Other) ** 2 + (y - y2Other) ** 2);
+            if (distanceStart <= 10) {
+                this.element.setAttribute("x1", x1Other);
+                this.element.setAttribute("y1", y1Other);
+            }
+            if (distanceEnd <= 10) {
+                this.element.setAttribute("x1", x2Other);
+                this.element.setAttribute("y1", y2Other);
+            }
+        }
+    }
 
-function start(event){
-    if(mode.value === 'pencil'){
-        isPainting = true;
-        isErasing = false;
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        let x1 = event.clientX - svgRect.left;
-        let y1 = event.clientY - svgRect.top;
-        let x2 = event.clientX - svgRect.left;
-        let y2 = event.clientY - svgRect.top;
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
-
-        const lines = document.querySelectorAll('line');
+    addPoint(x, y) {
+      this.element.setAttribute("x2", x);
+      this.element.setAttribute("y2", y);
+      this.boardText.setAttribute('style', 'display: none;');
+      const lines = document.querySelectorAll('line');
         for(let i=0; i<lines.length; i++){
             const x1Other = lines[i].getAttribute("x1");
             const y1Other = lines[i].getAttribute("y1");
             const x2Other = lines[i].getAttribute("x2");
             const y2Other = lines[i].getAttribute("y2");
-            const distanceStart = Math.sqrt((x1 - x1Other) ** 2 + (y1 - y1Other) ** 2);
-            const distanceEnd = Math.sqrt((x1 - x2Other) ** 2 + (y1 - y2Other) ** 2);
-            if (distanceStart < threshold) {
-                line.setAttribute("x1", x1Other);
-                line.setAttribute("y1", y1Other);
+            const distanceStart = Math.sqrt((x - x1Other) ** 2 + (y - y1Other) ** 2);
+            const distanceEnd = Math.sqrt((x - x2Other) ** 2 + (y - y2Other) ** 2);
+            if (distanceStart <= 10) {
+                this.element.setAttribute("x2", x1Other);
+                this.element.setAttribute("y2", y1Other);
             }
-            if (distanceEnd < threshold) {
-                line.setAttribute("x1", x2Other);
-                line.setAttribute("y1", y2Other);
-              }
-        }
-        board.appendChild(line);
-    }
-    else if(mode.value === 'eraser'){
-        isErasing = true;
-        isPainting = false;
-        const element = document.elementFromPoint(event.clientX, event.clientY);
-        if(element.tagName === 'line'){
-            element.remove();
-        }
-    }
-}
-
-function draw(event){
-    if(mode.value === 'eraser'){
-        const element = document.elementFromPoint(event.clientX, event.clientY);
-        if(element.tagName === 'line'){
-            element.addEventListener('mouseover', () => {
-                element.classList.add('highlight');
-            });
-            element.addEventListener('mouseleave', () => {
-                element.classList.remove('highlight');
-            });
-        }
-    }
-    if(isPainting === false) return;
-    else if(isPainting === true){
-        boardText.setAttribute('style', 'display: none;');
-        const line = board.lastChild;
-        const x2 = event.clientX - svgRect.left;
-        const y2 = event.clientY - svgRect.top
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
-        const lines = document.querySelectorAll('line');
-        for(let i=0; i<lines.length; i++){
-            const x1Other = lines[i].getAttribute("x1");
-            const y1Other = lines[i].getAttribute("y1");
-            const x2Other = lines[i].getAttribute("x2");
-            const y2Other = lines[i].getAttribute("y2");
-            const distanceStart = Math.sqrt((x2 - x1Other) ** 2 + (y2 - y1Other) ** 2);
-            const distanceEnd = Math.sqrt((x2 - x2Other) ** 2 + (y2 - y2Other) ** 2);
-            if (distanceStart <= threshold) {
-                line.setAttribute("x2", x1Other);
-                line.setAttribute("y2", y1Other);
-            }
-            if (distanceEnd <= threshold) {
-                line.setAttribute("x2", x2Other);
-                line.setAttribute("y2", y2Other);
+            if (distanceEnd <= 10) {
+                this.element.setAttribute("x2", x2Other);
+                this.element.setAttribute("y2", y2Other);
             }
 
         }
     }
-}
 
-function stop(event){
-    isPainting = false;
-    isErasing = false;
-    const emptyLine = document.querySelectorAll("line");
-    for(let i=0; i<emptyLine.length; i++){
-        if(emptyLine[i].getTotalLength() === 0){
-            emptyLine[i].remove();
-        }
+    remove() {
+      this.element.remove();
     }
-    if(!board.hasChildNodes()){
-        boardText.setAttribute('style', '');
-    }
-}
+  }
 
-function handleModeChange() {
-    isDrawing = false;
-    isErasing = false;
-}
+  const drawingBoard = new Draw('board');
