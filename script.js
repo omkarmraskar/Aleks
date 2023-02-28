@@ -22,10 +22,24 @@ class Draw{
             if(this.mode === 'pencil'){
                 this.updateShape(event.offsetX, event.offsetY);
             }
+            else if (this.mode === 'eraser'){
+              this.highlightLines(event.offsetX, event.offsetY);
+            }
         });
         this.element.addEventListener("mouseup", (event) => {
             this.endShape();
         });
+    }
+    highlightLines(x, y){
+      const element = document.elementFromPoint(x, y);
+      if(element.tagName === 'line'){
+          element.addEventListener('mouseover', () => {
+              element.classList.add('highlight');
+          });
+          element.addEventListener('mouseleave', () => {
+              element.classList.remove('highlight');
+          });
+      }
     }
     startShape(x, y) {
         this.currentShape = new Shape(x, y);
@@ -71,8 +85,7 @@ class Shape {
         this.element.setAttribute("y1", y);
         this.element.setAttribute("x2", x);
         this.element.setAttribute("y2", y);
-        this.element.setAttribute("stroke", "black");
-        this.element.setAttribute("stroke-width", "5");
+
         this.boardText = document.getElementById('board-text');
         const lines = document.querySelectorAll('line')
         for(let i=0; i<lines.length; i++){  

@@ -1,13 +1,16 @@
 ﻿
-# Day 4
+# Day 5
 
-### Snap together endpoints of two lines if close together 
+### Make Use Of Classes
 
-1) Snap together lines
-    - Calculate distance between old line and new line using distance formula
-    - if distance is less than certain value set attributes of new values same as old.
+1) Create a Draw class
+    - In it initialise drawing board
+    - create shape array to store all lines
+    - based on mode either call eventlistners for pencil or eraser
+    - call funtions to create shape, update shape, and stop
+    - complete the above funtions
 
-2) Highlight line while using eraser
-    - add highlight class when mouse enter line
-    - remove highlight class when mouse leaves line
-    - set stroke as different color to class highlight
+2) Create a Shape class
+    - create line element using constructor
+    - set end point dynamically using addPoint funtion
+    - create remove funtion to remove elements;
