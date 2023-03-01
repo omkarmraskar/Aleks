@@ -1,16 +1,8 @@
 ﻿
-# Day 5
+# Day 6 
 
-### Make Use Of Classes
+### Eraser Snapping
 
-1) Create a Draw class
-    - In it initialise drawing board
-    - create shape array to store all lines
-    - based on mode either call eventlistners for pencil or eraser
-    - call funtions to create shape, update shape, and stop
-    - complete the above funtions
-
-2) Create a Shape class
-    - create line element using constructor
-    - set end point dynamically using addPoint funtion
-    - create remove funtion to remove elements;
+- Create a getPerpendicularDistance function to calculate perpendicular distance from point to nearest line
+- If distance is less than 20px highlight the line by changing stroke to red
+- On mousedown event id distance is less than 20px remove the element
