@@ -7,3 +7,4 @@
 ## Day 3 [Eraser Implementation to Drawing Board](https://github.com/omkarmraskar/Aleks/tree/Day-3)
 ## Day 4 [Snap Lines Together and Highlight on Hover](https://github.com/omkarmraskar/Aleks/tree/Day-4)
 ## Day 5 [Make Use Of Classes](https://github.com/omkarmraskar/Aleks/tree/Day-5)
+## Day 6 [Eraser Snapping](https://github.com/omkarmraskar/Aleks/tree/Day-6)
