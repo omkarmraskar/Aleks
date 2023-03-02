@@ -7,16 +7,24 @@ class Draw{
         this.shapes = [];
         this.currentShape = null; 
         this.mode = "pencil";
-
+        this.element.setAttribute ('style',`cursor: url(icons/pencil.svg), default`)
         const selectTag = document.getElementById("mode-select");
             selectTag.addEventListener("change", (event) => {
                 this.mode = event.target.value;
+                if(this.mode === 'pencil'){
+                  this.element.setAttribute ('style',`cursor: url(icons/pencil.svg), auto`)
+                }
+                else if(this.mode ==='eraser'){
+                  this.element.setAttribute ('style',`cursor: url(icons/eraser.svg), auto`)
+                }
+                 
         });
 
         this.element.addEventListener("mousedown", (event) => {
-            if (this.mode === 'pencil') {
+            if (this.mode === 'pencil' && event.button === 0) {
+              
               this.startShape(event.offsetX, event.offsetY);
-            } else if (this.mode === 'eraser') {
+            } else if (this.mode === 'eraser'  && event.button === 0) {
               this.eraseShapes(event.offsetX, event.offsetY);
             }
           });
@@ -57,15 +65,28 @@ class Draw{
 
 
     getPerpendicularDistance(x, y, x1, y1, x2, y2) {
-      const slope = (y2 - y1) / (x2 - x1);
-      const yIntercept = y1 - slope * x1;
-      const perpendicularSlope = -1 / slope;
-      const midX = (x1 + x2) / 2;
-      const midY = (y1 + y2) / 2;
-      const perpendicularYIntercept = midY - perpendicularSlope * midX;
-      const intersectionX = (perpendicularYIntercept - yIntercept) / (slope - perpendicularSlope);
-      const intersectionY = slope * intersectionX + yIntercept;
-      const distance = Math.sqrt(Math.pow(x - intersectionX, 2) + Math.pow(y - intersectionY, 2));
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      const dotProduct = (x - x1) * (x2 - x1) + (y - y1) * (y2 - y1);
+      const projection = dotProduct / (length * length);
+    
+      let distance;
+      //if projection is before line
+      if (projection < 0) {
+        distance = Math.sqrt((x - x1) * (x - x1) + (y - y1) * (y - y1));
+      }
+      //if projection is after line
+      else if (projection > 1) {
+        distance = Math.sqrt((x - x2) * (x - x2) + (y - y2) * (y - y2));
+      }
+      //if projection is on the line
+      else {
+        const projectionX = x1 + projection * (x2 - x1);
+        const projectionY = y1 + projection * (y2 - y1);
+        distance = Math.sqrt((x - projectionX) * (x - projectionX) + (y - projectionY) * (y - projectionY));
+      }
+    
       return distance;
     }
 
