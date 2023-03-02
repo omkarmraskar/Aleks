@@ -1,36 +1,74 @@
 
 class Draw{
 
-
     constructor(id){
         this.element = document.getElementById(id);
         this.shapes = [];
         this.currentShape = null; 
-        this.mode = "pencil";
-        this.element.setAttribute ('style',`cursor: url(icons/pencil.svg), default`)
-        const selectTag = document.getElementById("mode-select");
-            selectTag.addEventListener("change", (event) => {
-                this.mode = event.target.value;
-                if(this.mode === 'pencil'){
-                  this.element.setAttribute ('style',`cursor: url(icons/pencil.svg), auto`)
-                }
-                else if(this.mode ==='eraser'){
-                  this.element.setAttribute ('style',`cursor: url(icons/eraser.svg), auto`)
-                }
-                 
+        
+        
+        this.mode = "popup";
+        this.iconPopup = document.getElementById('icon-popup');
+        this.selectedIcon = '';
+    
+    
+        const pencilSelect = document.getElementById("pencil-select");
+        pencilSelect.addEventListener("click", () => {
+    
+          if(eraseSelect.classList.contains('clicked')){
+            eraseSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+    
+          if (this.mode == "draw"){
+            this.mode = "popup";
+            pencilSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+          else{
+            this.mode = "draw";
+            pencilSelect.classList.add('clicked');
+            this.element.setAttribute ('style',`cursor: url(icons/pencil.svg), auto`)
+          }
+          
+        });
+        const eraseSelect = document.getElementById("eraser-select");
+        eraseSelect.addEventListener("click", () => {
+    
+          if (pencilSelect.classList.contains('clicked')){
+            pencilSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+    
+          if (this.mode == "eraser"){
+            this.mode = "popup";
+            eraseSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+          else{
+            this.mode = "eraser";
+
+            eraseSelect.classList.add('clicked');
+            this.element.setAttribute ('style',`cursor: url(icons/eraser.svg), auto`)
+          }
         });
 
         this.element.addEventListener("mousedown", (event) => {
-            if (this.mode === 'pencil' && event.button === 0) {
+            if (this.mode === 'draw' && event.button === 0) {
               
               this.startShape(event.offsetX, event.offsetY);
-            } else if (this.mode === 'eraser'  && event.button === 0) {
+            } 
+            else if (this.mode === 'eraser'  && event.button === 0) {
               this.eraseShapes(event.offsetX, event.offsetY);
             }
+            else{
+              this.iconPopup.classList.toggle('show');
+            }
           });
+
         this.element.addEventListener("mousemove", (event) => {
           
-            if(this.mode === 'pencil'){
+            if(this.mode === 'draw'){
               this.updateShape(event.offsetX, event.offsetY);
             }
             else if (this.mode === 'eraser'){
@@ -39,6 +77,12 @@ class Draw{
         });
         this.element.addEventListener("mouseup", (event) => {
             this.endShape();
+        });
+
+        document.querySelectorAll('.icon').forEach((icon) => {
+          icon.addEventListener('click', () => {
+            this.iconPopup.classList.toggle('show')
+          });
         });
     }
 
@@ -123,10 +167,8 @@ class Draw{
         const x2 = Number(element.getAttribute("x2"));
         const y2 = Number(element.getAttribute("y2"));
         const distance = this.getPerpendicularDistance(x, y, x1, y1, x2, y2);
-        console.log(distance);
         if (distance <= 20) {
           shapeElementsToRemove.push(shape.element);
-          console.log(shapeElementsToRemove);
         }
       }
     
@@ -146,8 +188,6 @@ class Draw{
 
 
 class Shape {
-
-
 
     constructor(x, y) {
         
