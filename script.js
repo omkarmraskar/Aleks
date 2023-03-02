@@ -1,28 +1,74 @@
 
 class Draw{
 
-
     constructor(id){
         this.element = document.getElementById(id);
         this.shapes = [];
         this.currentShape = null; 
-        this.mode = "pencil";
+        
+        
+        this.mode = "popup";
+        this.iconPopup = document.getElementById('icon-popup');
+        this.selectedIcon = '';
+    
+    
+        const pencilSelect = document.getElementById("pencil-select");
+        pencilSelect.addEventListener("click", () => {
+    
+          if(eraseSelect.classList.contains('clicked')){
+            eraseSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+    
+          if (this.mode == "draw"){
+            this.mode = "popup";
+            pencilSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+          else{
+            this.mode = "draw";
+            pencilSelect.classList.add('clicked');
+            this.element.setAttribute ('style',`cursor: url(icons/pencil.svg), auto`)
+          }
+          
+        });
+        const eraseSelect = document.getElementById("eraser-select");
+        eraseSelect.addEventListener("click", () => {
+    
+          if (pencilSelect.classList.contains('clicked')){
+            pencilSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+    
+          if (this.mode == "eraser"){
+            this.mode = "popup";
+            eraseSelect.classList.remove('clicked');
+            this.element.setAttribute ('style',`cursor: default`);
+          }
+          else{
+            this.mode = "eraser";
 
-        const selectTag = document.getElementById("mode-select");
-            selectTag.addEventListener("change", (event) => {
-                this.mode = event.target.value;
+            eraseSelect.classList.add('clicked');
+            this.element.setAttribute ('style',`cursor: url(icons/eraser.svg), auto`)
+          }
         });
 
         this.element.addEventListener("mousedown", (event) => {
-            if (this.mode === 'pencil') {
+            if (this.mode === 'draw' && event.button === 0) {
+              
               this.startShape(event.offsetX, event.offsetY);
-            } else if (this.mode === 'eraser') {
+            } 
+            else if (this.mode === 'eraser'  && event.button === 0) {
               this.eraseShapes(event.offsetX, event.offsetY);
             }
+            else{
+              this.iconPopup.classList.toggle('show');
+            }
           });
+
         this.element.addEventListener("mousemove", (event) => {
           
-            if(this.mode === 'pencil'){
+            if(this.mode === 'draw'){
               this.updateShape(event.offsetX, event.offsetY);
             }
             else if (this.mode === 'eraser'){
@@ -31,6 +77,12 @@ class Draw{
         });
         this.element.addEventListener("mouseup", (event) => {
             this.endShape();
+        });
+
+        document.querySelectorAll('.icon').forEach((icon) => {
+          icon.addEventListener('click', () => {
+            this.iconPopup.classList.toggle('show')
+          });
         });
     }
 
@@ -57,15 +109,28 @@ class Draw{
 
 
     getPerpendicularDistance(x, y, x1, y1, x2, y2) {
-      const slope = (y2 - y1) / (x2 - x1);
-      const yIntercept = y1 - slope * x1;
-      const perpendicularSlope = -1 / slope;
-      const midX = (x1 + x2) / 2;
-      const midY = (y1 + y2) / 2;
-      const perpendicularYIntercept = midY - perpendicularSlope * midX;
-      const intersectionX = (perpendicularYIntercept - yIntercept) / (slope - perpendicularSlope);
-      const intersectionY = slope * intersectionX + yIntercept;
-      const distance = Math.sqrt(Math.pow(x - intersectionX, 2) + Math.pow(y - intersectionY, 2));
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      const dotProduct = (x - x1) * (x2 - x1) + (y - y1) * (y2 - y1);
+      const projection = dotProduct / (length * length);
+    
+      let distance;
+      //if projection is before line
+      if (projection < 0) {
+        distance = Math.sqrt((x - x1) * (x - x1) + (y - y1) * (y - y1));
+      }
+      //if projection is after line
+      else if (projection > 1) {
+        distance = Math.sqrt((x - x2) * (x - x2) + (y - y2) * (y - y2));
+      }
+      //if projection is on the line
+      else {
+        const projectionX = x1 + projection * (x2 - x1);
+        const projectionY = y1 + projection * (y2 - y1);
+        distance = Math.sqrt((x - projectionX) * (x - projectionX) + (y - projectionY) * (y - projectionY));
+      }
+    
       return distance;
     }
 
@@ -102,10 +167,8 @@ class Draw{
         const x2 = Number(element.getAttribute("x2"));
         const y2 = Number(element.getAttribute("y2"));
         const distance = this.getPerpendicularDistance(x, y, x1, y1, x2, y2);
-        console.log(distance);
         if (distance <= 20) {
           shapeElementsToRemove.push(shape.element);
-          console.log(shapeElementsToRemove);
         }
       }
     
@@ -125,8 +188,6 @@ class Draw{
 
 
 class Shape {
-
-
 
     constructor(x, y) {
         

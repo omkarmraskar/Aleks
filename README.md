@@ -1,8 +1,8 @@
 ﻿
-# Day 6 
+# Day 7 
 
-### Eraser Snapping
+### Fix Eraser Snapping. Cursor Icon. Symbol Dialog Box
 
-- Create a getPerpendicularDistance function to calculate perpendicular distance from point to nearest line
-- If distance is less than 20px highlight the line by changing stroke to red
-- On mousedown event id distance is less than 20px remove the element
+- Fixed getPerpendicularDistance to work for whole line instead of midpoint.
+- Change cursor to pencil when pencil is selected and eraser when eraser is selected.
+- when nothing is selected open symbol dialog box and close on clicking again. similarly close dialog box when an icon is selected.
