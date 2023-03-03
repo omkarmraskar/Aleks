@@ -9,4 +9,4 @@
 ## Day 5 [Make Use Of Classes](https://github.com/omkarmraskar/Aleks/tree/Day-5)
 ## Day 6 [Eraser Snapping](https://github.com/omkarmraskar/Aleks/tree/Day-6)
 ## Day 7 [Fix Eraser Snapping | Cursor Icon | Symbol Dialog Box](https://github.com/omkarmraskar/Aleks/tree/Day-7)
-
+## Day 8 [Symbol](https://github.com/omkarmraskar/Aleks/tree/Day-8)
