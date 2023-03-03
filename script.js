@@ -5,13 +5,14 @@ class Draw{
         this.element = document.getElementById(id);
         this.shapes = [];
         this.currentShape = null; 
-        
+        this.boardText = document.getElementById('board-text');
         
         this.mode = "popup";
         this.iconPopup = document.getElementById('icon-popup');
         this.selectedIcon = '';
     
-    
+        this.x;
+        this.y;
         const pencilSelect = document.getElementById("pencil-select");
         pencilSelect.addEventListener("click", () => {
     
@@ -63,6 +64,9 @@ class Draw{
             }
             else{
               this.iconPopup.classList.toggle('show');
+              this.x = event.pageX;
+              this.y = event.pageY;
+              this.openIconPopup(event.pageX, event.pageY);
             }
           });
 
@@ -76,15 +80,20 @@ class Draw{
             }
         });
         this.element.addEventListener("mouseup", (event) => {
-            this.endShape();
+          this.endShape();
+          this.deleteShortLine(event);
         });
 
         document.querySelectorAll('.icon').forEach((icon) => {
-          icon.addEventListener('click', () => {
-            this.iconPopup.classList.toggle('show')
+          icon.addEventListener('click', (event)=>{
+            this.selectedIcon = event.target;
+            const box = this.selectedIcon.parentNode.getBoundingClientRect();
+            console.log(box);
+            this.addElementOnBoard(event, box.left, box.top);
+            this.iconPopup.classList.toggle('show');    
           });
         });
-    }
+      }
 
 
 
@@ -157,7 +166,55 @@ class Draw{
         }
     }
 
-
+    deleteShortLine(event){
+      const shapeElementsToRemove = [];
+      for (const shape of this.shapes) {
+        const element = shape.element;
+        const x1 = Number(element.getAttribute("x1"));
+        const y1 = Number(element.getAttribute("y1"));
+        const x2 = Number(element.getAttribute("x2"));
+        const y2 = Number(element.getAttribute("y2"));
+        const distance = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+        if (distance <= 20) {
+          shapeElementsToRemove.push(shape.element);
+          if(distance === 0){
+            this.iconPopup.classList.toggle('show');
+            this.x = x1;
+            this.y = y1;
+            this.openIconPopup(event.offsetX, event.offsetY);
+          }
+        }
+      }
+    
+      for (const element of shapeElementsToRemove) {
+        element.remove();
+        const index = this.shapes.findIndex(shape => shape.element === element);
+        if (index !== -1) {
+          this.shapes.splice(index, 1);
+        }
+      }
+    }
+    addElementOnBoard(event){
+      const newElement = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      newElement.setAttribute('transform', `translate(${this.x}, ${this.y})`)
+      newElement.setAttribute("style", 'position: absolute;')
+    
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.innerHTML = this.selectedIcon.textContent;
+      txt.setAttribute('text-anchor', 'middle');
+    
+      newElement.append(txt);
+     
+      this.element.appendChild(newElement);  
+    
+      this.boardText.setAttribute("style", "display: none;");
+    }
+    
+    openIconPopup(x, y) {
+      // Set the position of the icon popup
+      this.iconPopup.style.left = (x+102) + "px";
+      this.iconPopup.style.top = (y+42) + "px";
+    }
     eraseShapes(x, y) {
       const shapeElementsToRemove = [];
       for (const shape of this.shapes) {
