@@ -11,7 +11,8 @@ class Draw{
         this.iconPopup = document.getElementById('icon-popup');
         this.selectedIcon = '';
     
-    
+        this.x;
+        this.y;
         const pencilSelect = document.getElementById("pencil-select");
         pencilSelect.addEventListener("click", () => {
     
@@ -63,6 +64,8 @@ class Draw{
             }
             else{
               this.iconPopup.classList.toggle('show');
+              this.x = event.pageX;
+              this.y = event.pageY;
               this.openIconPopup(event.pageX, event.pageY);
             }
           });
@@ -84,7 +87,9 @@ class Draw{
         document.querySelectorAll('.icon').forEach((icon) => {
           icon.addEventListener('click', (event)=>{
             this.selectedIcon = event.target;
-            this.addElementOnBoard(event)
+            const box = this.selectedIcon.parentNode.getBoundingClientRect();
+            console.log(box);
+            this.addElementOnBoard(event, box.left, box.top);
             this.iconPopup.classList.toggle('show');    
           });
         });
@@ -174,6 +179,8 @@ class Draw{
           shapeElementsToRemove.push(shape.element);
           if(distance === 0){
             this.iconPopup.classList.toggle('show');
+            this.x = x1;
+            this.y = y1;
             this.openIconPopup(event.offsetX, event.offsetY);
           }
         }
@@ -189,7 +196,7 @@ class Draw{
     }
     addElementOnBoard(event){
       const newElement = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      newElement.setAttribute('transform', `translate(${event.pageX}, ${event.pageY})`)
+      newElement.setAttribute('transform', `translate(${this.x}, ${this.y})`)
       newElement.setAttribute("style", 'position: absolute;')
     
       const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
