@@ -5,7 +5,7 @@ class Draw{
         this.element = document.getElementById(id);
         this.shapes = [];
         this.currentShape = null; 
-        
+        this.boardText = document.getElementById('board-text');
         
         this.mode = "popup";
         this.iconPopup = document.getElementById('icon-popup');
@@ -63,6 +63,7 @@ class Draw{
             }
             else{
               this.iconPopup.classList.toggle('show');
+              this.openIconPopup(event.pageX, event.pageY);
             }
           });
 
@@ -77,15 +78,17 @@ class Draw{
         });
         this.element.addEventListener("mouseup", (event) => {
           this.endShape();
-          this.deleteShortLine();
+          this.deleteShortLine(event);
         });
 
         document.querySelectorAll('.icon').forEach((icon) => {
-          icon.addEventListener('click', () => {
-            this.iconPopup.classList.toggle('show')
+          icon.addEventListener('click', (event)=>{
+            this.selectedIcon = event.target;
+            this.addElementOnBoard(event)
+            this.iconPopup.classList.toggle('show');    
           });
         });
-    }
+      }
 
 
 
@@ -158,7 +161,7 @@ class Draw{
         }
     }
 
-    deleteShortLine(){
+    deleteShortLine(event){
       const shapeElementsToRemove = [];
       for (const shape of this.shapes) {
         const element = shape.element;
@@ -171,6 +174,7 @@ class Draw{
           shapeElementsToRemove.push(shape.element);
           if(distance === 0){
             this.iconPopup.classList.toggle('show');
+            this.openIconPopup(event.offsetX, event.offsetY);
           }
         }
       }
@@ -183,7 +187,27 @@ class Draw{
         }
       }
     }
-
+    addElementOnBoard(event){
+      const newElement = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      newElement.setAttribute('transform', `translate(${event.pageX}, ${event.pageY})`)
+      newElement.setAttribute("style", 'position: absolute;')
+    
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.innerHTML = this.selectedIcon.textContent;
+      txt.setAttribute('text-anchor', 'middle');
+    
+      newElement.append(txt);
+     
+      this.element.appendChild(newElement);  
+    
+      this.boardText.setAttribute("style", "display: none;");
+    }
+    
+    openIconPopup(x, y) {
+      // Set the position of the icon popup
+      this.iconPopup.style.left = (x+102) + "px";
+      this.iconPopup.style.top = (y+42) + "px";
+    }
     eraseShapes(x, y) {
       const shapeElementsToRemove = [];
       for (const shape of this.shapes) {
