@@ -1,7 +1,7 @@
-﻿
-# Day 8 
 
-### Symbol
+# Day 9 
 
-- Fixed where symbols are placed.
-- Open dialogue box where click is made 
+### Eraser for Symbol
+
+- Highlight symbols same as line highlight
+- Remove symbol onclick when eraser is selected
