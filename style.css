@@ -29,6 +29,7 @@ svg > line{
 }
 .highlight{
     stroke: red;
+    color: red;
 }
 
 .switch img{
