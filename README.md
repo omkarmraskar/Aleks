@@ -11,3 +11,4 @@
 ## Day 7 [Fix Eraser Snapping | Cursor Icon | Symbol Dialog Box](https://github.com/omkarmraskar/Aleks/tree/Day-7)
 ## Day 8 [Symbol](https://github.com/omkarmraskar/Aleks/tree/Day-8)
 ## Day 9 [Eraser For Symbol](https://github.com/omkarmraskar/Aleks/tree/Day-9)
+## Day 10 [Eraser For Symbol](https://github.com/omkarmraskar/Aleks/tree/Day-10)
