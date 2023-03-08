@@ -14,6 +14,24 @@ class Draw{
     
         this.x;
         this.y;
+
+        this.undoRedo = new UndoRedo();
+        const undoButton = document.getElementById("undo-button");
+        undoButton.addEventListener("click", this.undo.bind(this));
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'z' && event.ctrlKey) {
+            // Call the undo method here
+            this.undo();
+          }
+        });
+        const redoButton = document.getElementById("redo-button");
+        redoButton.addEventListener("click", this.redo.bind(this));
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'y' && event.ctrlKey) {
+            // Call the redo method here
+            this.redo();
+          }
+        });
         const pencilSelect = document.getElementById("pencil-select");
         pencilSelect.addEventListener("click", () => {
     
@@ -94,6 +112,7 @@ class Draw{
             if(this.currentSymbol !== null){
               this.element.appendChild(this.currentSymbol.element);
               this.shapes.push(this.currentSymbol);
+              this.undoRedo.pushState(this.shapes.slice());
             }
             
             this.currentSymbol = null;
@@ -189,6 +208,7 @@ class Draw{
     startShape(x, y, mode) {
         this.currentShape = new Shape(x, y, mode);
         this.element.appendChild(this.currentShape.element);
+        this.undoRedo.pushState(this.shapes.slice());
     }
 
 
@@ -204,7 +224,9 @@ class Draw{
         if (this.currentShape !== null) {
           this.shapes.push(this.currentShape);
           this.currentShape = null;
+          this.undoRedo.pushState(this.shapes.slice());
         }
+        // this.undoRedo.pushState(this.shapes.slice());
     }
 
     deleteShortLine(event){
@@ -236,6 +258,7 @@ class Draw{
           this.shapes.splice(index, 1);
         }
       }
+      this.undoRedo.pushState(this.shapes.slice());
     }
     
     openIconPopup(x, y) {
@@ -261,8 +284,39 @@ class Draw{
           this.shapes.splice(index, 1);
         }
       }
+      this.undoRedo.pushState(this.shapes.slice());
+    }
+    undo() {
+      // pop the last state from the undo stack
+      const prevState = this.undoRedo.undo();
+      
+      // restore the previous state
+      if (prevState) {
+        this.shapes = prevState;
+        this.redraw();
+      }
+    }
+  
+    redo() {
+      // pop the last state from the redo stack
+      const nextState = this.undoRedo.redo();
+      
+      // restore the next state
+      if (nextState) {
+        this.shapes = nextState;
+        this.redraw();
+      }
     }
     
+    redraw() {
+      // clear the canvas and redraw all shapes...
+      this.element.innerHTML = '';
+      this.shapes.forEach(shape => {
+        const shapeElement = shape.element;
+        this.element.appendChild(shapeElement);
+    
+      });
+    }
     
 }
 
@@ -349,5 +403,44 @@ class Shape {
     }
   }
 
+  class UndoRedo {
+    constructor() {
+      this.undoStack = [];
+      this.redoStack = [];
+    }
   
+    // Push the current state onto the undo stack
+    pushState(state) {
+      this.undoStack.push(state);
+      this.redoStack = [];
+    }
+  
+    // Pop the last state from the undo stack
+    undo() {
+      const state = this.undoStack.pop();
+      if (state) {
+        this.redoStack.push(state);
+      }
+      return state;
+    }
+  
+    // Pop the last state from the redo stack
+    redo() {
+      const state = this.redoStack.pop();
+      if (state) {
+        this.undoStack.push(state);
+      }
+      return state;
+    }
+  
+    // Check if undo is available
+    canUndo() {
+      return this.undoStack.length > 0;
+    }
+  
+    // Check if redo is available
+    canRedo() {
+      return this.redoStack.length > 0;
+    }
+  }
   const drawingBoard = new Draw('board');
