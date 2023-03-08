@@ -1,7 +1,8 @@
 
-# Day 9 
+# Day 10 
 
-### Eraser for Symbol
+### Undo/Redo
 
-- Highlight symbols same as line highlight
-- Remove symbol onclick when eraser is selected
+- Created UndoRedo class to implement undo redo funcitonality
+- Implemented UndoRedo class in Draw Class
+
