@@ -2,6 +2,7 @@
 class Draw{
 
     constructor(id){
+
         this.element = document.getElementById(id);
         this.shapes = [];
         this.currentShape = null; 
@@ -14,6 +15,19 @@ class Draw{
     
         this.x;
         this.y;
+
+
+        fetch('json/data.json').then(response => {
+            return response.json();
+        }).then(obj =>{
+          let lines = obj.edges;
+          for(const line of lines){
+            this.startShape(line.x1, line.y1, 'pencil');
+            this.updateShape(line.x2, line.y2, 'pencil');
+            this.endShape();
+          }
+        })
+
 
         this.undoRedo = new UndoRedo();
         const undoButton = document.getElementById("undo-button");
@@ -118,7 +132,9 @@ class Draw{
         });
       }
 
-
+    // load(id, shapes){
+      
+    // }
 
     highlightLines(x, y){
 
@@ -208,10 +224,9 @@ class Draw{
 
     updateShape(x, y, mode) {
         if (this.currentShape !== null && mode === 'pencil') {
-          this.currentShape.addPoint(x, y, this.mode);
+          this.currentShape.addPoint(x, y, mode);
         }
     }
-
 
     endShape() {
         if (this.currentShape !== null) {

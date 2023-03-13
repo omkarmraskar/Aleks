@@ -1,8 +1,8 @@
 
-# Day 11 
+# Day 12 
 
-### Icon Popup
+### Json
 
-- Made so that icon popup works on when pencil is selected
-- Worked more on undo/redo
+- Created json to store shape details
+- used fetch api to load data
 
