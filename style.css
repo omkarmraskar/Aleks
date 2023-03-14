@@ -69,4 +69,10 @@ svg > line{
     justify-content: center;
     align-items: center;
   }
+  #jsonForm{
+    margin-top: 5px;
+  }
+  #jsonForm input{
+    border: 1px solid black;
+  }
   
