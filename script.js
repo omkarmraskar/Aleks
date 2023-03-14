@@ -16,18 +16,39 @@ class Draw{
         this.x;
         this.y;
 
-
-        fetch('json/data.json').then(response => {
-            return response.json();
-        }).then(obj =>{
-          let lines = obj.edges;
-          for(const line of lines){
-            this.startShape(line.x1, line.y1, 'pencil');
-            this.updateShape(line.x2, line.y2, 'pencil');
-            this.endShape();
+        const jsonForm = document.getElementById("jsonForm");
+        jsonForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+        });
+        const parseButton = document.getElementById("parseButton");
+        parseButton.addEventListener("click", () => {
+          const fileInput = document.getElementById("jsonFileInput");
+          if (!fileInput.files[0]){
+            alert('No file chosen');
           }
-        })
+          else{
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.addEventListener("load", (event) => {
+              const fileContent = event.target.result;
+              const json = JSON.parse(fileContent);
+              this.loadDynamicJson(json);
+            });
+            reader.readAsText(file);
+          }
+        });
+        this.loadStaticJson();
 
+        const eraseDynamic = document.getElementById("redraw");
+        eraseDynamic.addEventListener("click", () => {
+          this.loadStaticJson();
+        });
+        const clearall = document.getElementById("clear-board");
+        clearall.addEventListener("click", () => {
+          this.element.innerHTML = ``;
+        });
+
+        
 
         this.undoRedo = new UndoRedo();
         const undoButton = document.getElementById("undo-button");
@@ -135,7 +156,31 @@ class Draw{
     // load(id, shapes){
       
     // }
-
+    loadDynamicJson(data){
+      console.log(data);
+      this.element.innerHTML = ``;
+      let lines = data.edges;
+      for (const line of lines) {
+        this.startShape(line.x1, line.y1, "pencil");
+        this.updateShape(line.x2, line.y2, "pencil");
+        this.endShape();
+      }
+    }
+    loadStaticJson() {
+      this.element.innerHTML = ``;
+      fetch("json/data.json")
+        .then((response) => {
+          return response.json();
+        })
+        .then((obj) => {
+          let lines = obj.edges;
+          for (const line of lines) {
+            this.startShape(line.x1, line.y1, "pencil");
+            this.updateShape(line.x2, line.y2, "pencil");
+            this.endShape();
+          }
+        });
+    }
     highlightLines(x, y){
 
       for (const shape of this.shapes) {
