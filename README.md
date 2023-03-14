@@ -1,8 +1,8 @@
 
-# Day 12 
+# Day 13 
 
-### Json
+### Working on Json Integration 
 
-- Created json to store shape details
-- used fetch api to load data
+- Added option to load json file
+- Added option to load pre defined json
 
