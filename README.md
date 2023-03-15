@@ -1,8 +1,7 @@
 
-# Day 13 
+# Day 14 
 
-### Working on Json Integration 
+### Symbol Snapping
 
-- Added option to load json file
-- Added option to load pre defined json
+- Symbol snapping if near a line endpoint
 
