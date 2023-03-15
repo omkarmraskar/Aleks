@@ -15,3 +15,4 @@
 ## Day 11 [Icon Popup](https://github.com/omkarmraskar/Aleks/commit/cc0e4c4b72bcba8ee29c98e578e51d3fd704a088)
 ## Day 12 [Json](https://github.com/omkarmraskar/Aleks/commit/342a4fa4074dd591c1adcabb4c23f2044fe228bf)
 ## Day 13 [Working on Json Integration](https://github.com/omkarmraskar/Aleks/commit/2f6922134794366b61eb6f5197325466aa76221f)
+## Day 14 [Symbol Snapping](https://github.com/omkarmraskar/Aleks/commit/3eff5893d3bf088382ec80b17dc0ca1414efeb99)
