@@ -38,7 +38,7 @@ class Draw{
           }
         });
         this.loadStaticJson();
-
+        
         const eraseDynamic = document.getElementById("redraw");
         eraseDynamic.addEventListener("click", () => {
           this.loadStaticJson();
@@ -46,6 +46,9 @@ class Draw{
         const clearall = document.getElementById("clear-board");
         clearall.addEventListener("click", () => {
           this.element.innerHTML = ``;
+          this.undoRedo.undoStack.length = 0;
+          console.log(this.undoRedo.undoStack);
+          this.undoRedo.pushState(this.shapes.slice());
         });
 
         
@@ -141,9 +144,9 @@ class Draw{
             if(this.currentSymbol){
               this.element.appendChild(this.currentSymbol.element);
               this.shapes.push(this.currentSymbol);
-              this.undoRedo.pushState(this.shapes.slice());
+              
             }
-            
+            this.undoRedo.pushState(this.shapes.slice());
             this.currentSymbol = null;
       
             
@@ -165,6 +168,8 @@ class Draw{
         this.updateShape(line.x2, line.y2, "pencil");
         this.endShape();
       }
+      this.undoRedo.undoStack.length = 0;
+      this.undoRedo.pushState(this.shapes.slice());
     }
     loadStaticJson() {
       this.element.innerHTML = ``;
@@ -179,6 +184,8 @@ class Draw{
             this.updateShape(line.x2, line.y2, "pencil");
             this.endShape();
           }
+          this.undoRedo.undoStack.length = 0;
+          this.undoRedo.pushState(this.shapes.slice());
         });
     }
     highlightLines(x, y){
@@ -187,22 +194,11 @@ class Draw{
         const element = shape.element;
 
         let distance = this.getPerpendicularDistance(x, y, element);;
-        if(element.tagName === 'line'){
-          
-          if (distance <= 15) {
-            element.classList.add('highlight');
-            }
-          else{
-            element.classList.remove('highlight');
+        if (distance <= 15) {
+          element.classList.add('highlight');
           }
-        }
-        else if(element.tagName === 'g'){
-          if (distance <= 15) {
-            element.classList.add('highlight');
-            }
-          else{
-            element.classList.remove('highlight');
-          }
+        else{
+          element.classList.remove('highlight');
         }
         
       }
@@ -262,7 +258,7 @@ class Draw{
     startShape(x, y, mode) {
         this.currentShape = new Shape(x, y, mode);
         this.element.appendChild(this.currentShape.element);
-        this.undoRedo.pushState(this.shapes.slice());
+        // this.undoRedo.pushState(this.shapes.slice());
     }
 
 
@@ -276,10 +272,21 @@ class Draw{
     endShape() {
         if (this.currentShape !== null) {
           this.shapes.push(this.currentShape);
+          if(this.getLength(this.currentShape.element) > 20){
+            this.undoRedo.pushState(this.shapes.slice());
+          }
           this.currentShape = null;
         }
     }
-
+    getLength(element){
+      if(element.tagName === 'line'){
+        const x1 = Number(element.getAttribute("x1"));
+        const y1 = Number(element.getAttribute("y1"));
+        const x2 = Number(element.getAttribute("x2"));
+        const y2 = Number(element.getAttribute("y2"));
+        return Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+      }
+    }
     deleteShortLine(event){
       const shapeElementsToRemove = [];
       for (const shape of this.shapes) {
@@ -292,12 +299,12 @@ class Draw{
           const distance = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
           if (distance <= 20) {
             shapeElementsToRemove.push(shape.element);
-            if(distance === 0){
+            // if(distance === 0){
               this.iconPopup.classList.toggle('show');
               this.x = x1;
               this.y = y1;
               this.openIconPopup(event.offsetX, event.offsetY);
-            }
+            // }
           }
         }
       }
@@ -309,6 +316,7 @@ class Draw{
           this.shapes.splice(index, 1);
         }
       }
+
     }
     
     openIconPopup(x, y) {
@@ -352,10 +360,11 @@ class Draw{
       const nextState = this.undoRedo.redo();
       
       // restore the next state
-      if (nextState) {
+      // if (nextState) {
         this.shapes = nextState.slice();
-        this.redraw();
-      }
+        // this.redraw();
+      // }
+      this.redraw();
     }
     
     redraw() {
@@ -406,6 +415,71 @@ class Shape {
         else{
           this.element = document.createElementNS('http://www.w3.org/2000/svg', 'g');
           this.element.setAttribute('transform', `translate(${x}, ${y})`)
+          const lines = document.querySelectorAll('line');
+          for(const line of lines){
+            let x1Other = parseInt(line.getAttribute("x1"));
+            let y1Other = parseInt(line.getAttribute("y1"));
+            let x2Other = parseInt(line.getAttribute("x2"));
+            let y2Other = parseInt(line.getAttribute("y2"));
+            const distanceStart = Math.sqrt((x - x1Other) ** 2 + (y - y1Other) ** 2);
+            const distanceEnd = Math.sqrt((x - x2Other) ** 2 + (y - y2Other) ** 2);
+            if (distanceStart <= 10) {
+                this.element.removeAttribute('transform');
+                let sine = this.getSine(x1Other, y1Other, x2Other, y2Other);
+                let cosine = this.getCosine(x1Other, y1Other, x2Other, y2Other);
+                if(x1Other < x2Other){
+                  if(y1Other < y2Other){
+                    x1Other = x1Other - 10*sine;
+                    y1Other = y1Other - 10*cosine;
+                  }
+                  else{
+                    x1Other = x1Other - 10*sine;
+                    y1Other = y1Other + 10*cosine;
+                  }
+                }
+                else{
+                  if(y1Other < y2Other){
+                    x1Other = x1Other - 10*sine;
+                    y1Other = y1Other + 10*cosine;
+                  }
+                  else{
+                    x1Other = x1Other - 10*sine;
+                    y1Other = y1Other + 10*cosine;
+                  }
+                  
+                }
+                this.element.setAttribute('transform', `translate(${x1Other}, ${y1Other})`)
+            }
+            if (distanceEnd <= 10) {
+                this.element.removeAttribute('transform');
+                let sine = this.getSine(x1Other, y1Other, x2Other, y2Other);
+                let cosine = this.getCosine(x1Other, y1Other, x2Other, y2Other);
+                if(x1Other < x2Other){
+                  if(y1Other < y2Other){
+                    x2Other = x2Other + 10*sine;
+                    y2Other = y2Other + 10*cosine;
+                  }
+                  else{
+                    x2Other = x2Other + 10*sine;
+                    y2Other = y2Other - 10*cosine;
+                  }
+                }
+                else{
+                  if(y1Other < y2Other){
+                    x2Other = x2Other - 10*sine;
+                    y2Other = y2Other + 10*cosine;
+                  }
+                  else{
+                    x2Other = x2Other + 10*sine;
+                    y2Other = y2Other - 10*cosine;
+                  }
+                  // x2Other = x2Other - 10*sine;
+                  // y2Other = y2Other - 10*cosine;
+                }
+                this.element.setAttribute('transform', `translate(${x2Other}, ${y2Other})`)
+            }
+    
+          }
           this.element.setAttribute("style", 'position: absolute;')
         
           this.txt = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -415,8 +489,47 @@ class Shape {
           this.element.append(this.txt);
         }
     }
+    
+    getSine(x1, y1, x2, y2){
+      const dx = x2-x1;
+      const dy = y2-y1;
+      let theta_x = Math.atan2(dy, dx);
+      if(theta_x < 0){
+        theta_x*=(-1);
+      }
+      console.log(theta_x)
+      const sine = Math.sin(theta_x);
+      console.log(dx + " " + dy)
+      // console.log(sine);
+      return sine;
+    }
+    getCosine(x1, y1, x2, y2){
+      const dx = x2-x1;
+      const dy = y2-y1;
+      const theta_y = Math.atan2(dx, dy);
+      const cosine = Math.cos(theta_y);
+      // console.log(cosine)
+      return cosine;
+    }
+    isClose(element, x, y){
+      const lines = document.querySelectorAll('line');
+      for(const line of lines){
+        const x1Other = parseInt(line.getAttribute("x1"));
+        const y1Other = parseInt(line.getAttribute("y1"));
+        const x2Other = parseInt(line.getAttribute("x2"));
+        const y2Other = parseInt(line.getAttribute("y2"));
+        const distanceStart = Math.sqrt((x - x1Other) ** 2 + (y - y1Other) ** 2);
+        const distanceEnd = Math.sqrt((x - x2Other) ** 2 + (y - y2Other) ** 2);
+        if (distanceStart <= 10) {
+            element.removeAttribute('transform');
+            element.setAttribute('transform', `translate(${x1Other+10}, ${y1Other+10})`)
+        }
+        if (distanceEnd <= 10) {
+            element.setAttribute('transform', `translate(${x2Other + 100}, ${y2Other+100})`)
+        }
 
-
+      }
+    }
 
 
     addPoint(x, y, mode) {
@@ -471,6 +584,8 @@ class Shape {
       if (state) {
         this.redoStack.push(state);
       }
+      console.log(this.undoStack);
+      console.log(this.redoStack);
       return state;
     }
   
@@ -480,6 +595,8 @@ class Shape {
       if (state) {
         this.undoStack.push(state);
       }
+      console.log(this.undoStack);
+      console.log(this.redoStack);
       return state;
     }
   
