@@ -17,3 +17,4 @@
 ## Day 13 [Working on Json Integration](https://github.com/omkarmraskar/Aleks/commit/2f6922134794366b61eb6f5197325466aa76221f)
 ## Day 14 [Symbol Snapping](https://github.com/omkarmraskar/Aleks/commit/3eff5893d3bf088382ec80b17dc0ca1414efeb99)
 ## Day 15 [Graph Class](https://github.com/omkarmraskar/Aleks/commit/78a2b8ce253a7c802e844ed46ee613b5e3229e76)
+## Day 16 [Graph Class](https://github.com/omkarmraskar/Aleks/commit/b0b6dfe3c9cf3df93051a586d4c5e38cba0b6e7c)
