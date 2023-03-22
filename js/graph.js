@@ -3,6 +3,7 @@ class Graph {
 	constructor() {
 	  this.__nodes = [];
 	  this.__edges = [];
+	  
 	}
 
 	// function to return if a graph is empty or not
@@ -111,6 +112,11 @@ class Graph {
 	  };
 	  return recall;
 	}
+
+	draw(){
+		const board = document.getElementById('board');
+		
+	}
   }
 
   class Edge extends Graph {
@@ -139,6 +145,14 @@ class Graph {
 	  } else {
 		this.__nodes[1] = node;
 	  }
+	}
+	draw(){
+		const x1 = this.__nodes[0].x;
+		const y1 = this.__nodes[0].y;
+		const x2 = this.__nodes[1].x;
+		const y2 = this.__nodes[1].y;
+		const line = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">`
+		return line;
 	}
   }
   class Node extends Edge {
