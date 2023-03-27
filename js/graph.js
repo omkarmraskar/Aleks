@@ -119,7 +119,7 @@ class Graph {
 	}
   }
 
-  class Edge extends Graph {
+class Edge extends Graph {
 
 	constructor(node1, node2) {
 	  this.__nodes = [node1, node2];
@@ -155,10 +155,13 @@ class Graph {
 		return line;
 	}
   }
-  class Node extends Edge {
 
-	constructor() {
+class Node extends Edge {
+
+	constructor(x, y) {
 	  this.__edges = [[], []]; //this.__edges[0] is the edges for which this is edge.__nodes[0], and this.__edges[1] is the edge for which this is edge.__nodes[1].
+	  this.x = x;
+	  this.y = y;
 	}
 
 	// function to get incoming edges of a node
@@ -258,5 +261,15 @@ class Graph {
 		}
 	  }
 	  return null;
+	}
+	draw(){
+		const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+		g.setAttribute('transform', `x="${this.x}" y="${this.y}"`);
+
+		const txt = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+		txt.setAttribute("style", 'user-select : none;');
+		g.append(txt);
+
+		return g;
 	}
   }
