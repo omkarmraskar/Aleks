@@ -1,7 +1,7 @@
 ﻿
-# Day 16 
+# Day 17 
 
-### Graph Class
+### Node Class
 
 - Completed remaining functions 
 
