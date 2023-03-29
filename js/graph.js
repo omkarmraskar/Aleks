@@ -119,7 +119,7 @@ class Graph {
 	}
   }
 
-class Edge extends Graph {
+class Edge{
 
 	constructor(node1, node2) {
 	  this.__nodes = [node1, node2];
@@ -156,7 +156,7 @@ class Edge extends Graph {
 	}
   }
 
-class Node extends Edge {
+class Node{
 
 	constructor(x, y) {
 	  this.__edges = [[], []]; //this.__edges[0] is the edges for which this is edge.__nodes[0], and this.__edges[1] is the edge for which this is edge.__nodes[1].
@@ -271,5 +271,17 @@ class Node extends Edge {
 		g.append(txt);
 
 		return g;
+	}
+	setX(x){
+		this.x = x;
+	}
+	setY(y){
+		this.y = y;
+	}
+	setNodeIcon(icon){
+		this.icon = icon;
+	}
+	toggleVisible(){
+		this.visible != this.visible;
 	}
   }
