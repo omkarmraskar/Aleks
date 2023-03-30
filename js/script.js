@@ -15,31 +15,8 @@ class Draw{
     this.x;
     this.y;
 
+    this.addEventListeners();
     
-
-    this.element.addEventListener("mousedown", (event) => {
-        if (this.mode === 'pencil' && event.button === 0) {
-          this.startShape(event.offsetX, event.offsetY, this.mode);
-        } 
-        else if (this.mode === 'eraser'  && event.button === 0) {
-          this.eraseShapes(event.offsetX, event.offsetY);
-        }
-      });
-
-    this.element.addEventListener("mousemove", (event) => {
-        if(this.mode === 'pencil'){
-          this.updateShape(event.offsetX, event.offsetY, this.mode);
-        }
-        else if (this.mode === 'eraser'){
-          snapping.highlightLines(event.offsetX, event.offsetY);
-        }
-    });
-
-    this.element.addEventListener("mouseup", (event) => {
-      this.endShape();
-      snapping.deleteShortLine(event);
-    });
-
     document.querySelectorAll('.icon').forEach((icon) => {
       icon.addEventListener('click', (event)=>{
         this.selectedIcon = event.target;
@@ -56,6 +33,57 @@ class Draw{
     });
   }
 
+  setMode(mode) {
+    this.mode = mode;
+    this.addEventListeners();
+  }
+
+  addEventListeners() {
+    this.element.removeEventListener('mousedown', this.pencilEventListener);
+    this.element.removeEventListener('mousemove', this.pencilMouseMoveEventListener);
+    this.element.removeEventListener('mousedown', this.eraserEventListener);
+    this.element.removeEventListener('mousemove', this.eraserMouseMoveEventListener);
+    this.element.removeEventListener('mouseup', this.mouseUpEventListener);
+  
+    if (this.mode === 'pencil') {
+      this.element.addEventListener('mousedown', this.pencilEventListener = this.pencilEventListener.bind(this));
+      this.element.addEventListener('mousemove', this.pencilMouseMoveEventListener = this.pencilMouseMoveEventListener.bind(this));
+    } else if (this.mode === 'eraser') {
+      this.element.addEventListener('mousedown', this.eraserEventListener = this.eraserEventListener.bind(this));
+      this.element.addEventListener('mousemove', this.eraserMouseMoveEventListener = this.eraserMouseMoveEventListener.bind(this));
+    }
+  
+    this.element.addEventListener('mouseup', this.mouseUpEventListener = this.mouseUpEventListener.bind(this));
+  }
+
+  getMode(){
+    return this.mode;
+  }
+
+  pencilEventListener(event) {
+    if (event.button === 0) {
+      this.startShape(event.offsetX, event.offsetY, 'pencil');
+    }
+  }
+  
+  eraserEventListener(event) {
+    if (event.button === 0) {
+      this.eraseShapes(event.offsetX, event.offsetY);
+    }
+  }
+  
+  pencilMouseMoveEventListener(event) {
+    this.updateShape(event.offsetX, event.offsetY, 'pencil');
+  }
+  
+  eraserMouseMoveEventListener(event) {
+    snapping.highlightLines(event.offsetX, event.offsetY);
+  }
+  
+  mouseUpEventListener(event) {
+    this.endShape();
+    snapping.deleteShortLine(event);
+  }
 
   startShape(x, y, mode) {
       this.currentShape = new Shape(x, y, mode);

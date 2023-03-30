@@ -23,13 +23,13 @@ pencilSelect.addEventListener("click", () => {
     editor.element.setAttribute("style", `cursor: default`);
   }
 
-  if (editor.mode == "pencil") {
-    editor.mode = "";
+  if (editor.getMode() == "pencil") {
+    editor.setMode("");
     pencilSelect.classList.remove("clicked");
     editor.element.setAttribute("style", `cursor: default`);
   } 
   else {
-    editor.mode = "pencil";
+    editor.setMode("pencil");
     pencilSelect.classList.add("clicked");
     editor.g = editor.element.getElementsByTagName("g");
     editor.text = editor.element.getElementsByTagName("text");
@@ -45,13 +45,13 @@ eraseSelect.addEventListener("click", () => {
     editor.element.setAttribute("style", `cursor: default`);
   }
 
-  if (editor.mode == "eraser") {
-    editor.mode = "";
+  if (editor.getMode() == "eraser") {
+    editor.setMode("");
     eraseSelect.classList.remove("clicked");
     editor.element.setAttribute("style", `cursor: default`);
   } 
   else {
-    editor.mode = "eraser";
+    editor.setMode("eraser");
 
     eraseSelect.classList.add("clicked");
     editor.element.setAttribute("style", `cursor: url(icons/eraser.svg), auto`);
