@@ -19,3 +19,5 @@
 ## Day 15 [Graph Class](https://github.com/omkarmraskar/Aleks/commit/78a2b8ce253a7c802e844ed46ee613b5e3229e76)
 ## Day 16 [Graph Class](https://github.com/omkarmraskar/Aleks/commit/b0b6dfe3c9cf3df93051a586d4c5e38cba0b6e7c)
 ## Day 17 [Node Class](https://github.com/omkarmraskar/Aleks/commit/05b3676a31d91ffd8248e1a5e6a0675aa4ccabc5)
+## Day 18-19 [Refactoring](https://github.com/omkarmraskar/Aleks/commit/c1124f93911dad8bf231e14b9c91ddcc7e948e2f)
+## Day 20 [Mode Specific Event Listeners](https://github.com/omkarmraskar/Aleks/commit/9c3dbe2d49554c4e51d7e13cb05483022aa42f76)
