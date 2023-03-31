@@ -1,9 +1,7 @@
 class Graph {
-
 	constructor() {
 	  this.__nodes = [];
 	  this.__edges = [];
-	  
 	}
 
 	// function to return if a graph is empty or not
@@ -12,11 +10,16 @@ class Graph {
 	}
 
 	// function to add a new node in the graph
-	addNode() {
+	addNode(node) {
 	  const newNode = {
 		nodeID: this.__nodes.length + 1,
+		x: node.x,
+		y: node.y,
+		visible : node.visible,
+		icon : node.icon
 	  };
-	  this.__nodes.append(newNode);
+	  this.__nodes.push(newNode);
+	  return node;
 	}
 
 	// function to return if a particular node is present the graph or not
@@ -52,11 +55,13 @@ class Graph {
 	}
 
 	// function to add an edge in the graph
-	addEdge() {
+	addEdge(edge) {
 	  const newEdge = {
 		edgeID: this.__edges.length + 1,
+		source: edge.node1,
+		target: edge.node2
 	  };
-	  this.__edges.append(newEdge);
+	  this.__edges.push(newEdge);
 	}
 
 	// funtion to return if a particular edge is present the graph or not
@@ -146,22 +151,34 @@ class Edge{
 		this.__nodes[1] = node;
 	  }
 	}
+
+	updateNode(x, y){
+		this.__nodes[1].x = x;
+		this.__nodes[1].y = y;
+	}
+
 	draw(){
 		const x1 = this.__nodes[0].x;
 		const y1 = this.__nodes[0].y;
 		const x2 = this.__nodes[1].x;
 		const y2 = this.__nodes[1].y;
-		const line = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">`
+		const line = document.createElementNS("http://www.w3.org/2000/svg", 'line')
+		line.setAttribute('x1', x1);
+		line.setAttribute('x2', x2);
+		line.setAttribute('y1', y1);
+		line.setAttribute('y2', y2);
 		return line;
 	}
   }
 
 class Node{
 
-	constructor(x, y) {
+	constructor(x = 0, y = 0, icon = 'C', visible = false) {
 	  this.__edges = [[], []]; //this.__edges[0] is the edges for which this is edge.__nodes[0], and this.__edges[1] is the edge for which this is edge.__nodes[1].
 	  this.x = x;
 	  this.y = y;
+	  this.icon = icon;
+	  this.visible = visible;
 	}
 
 	// function to get incoming edges of a node
@@ -264,12 +281,14 @@ class Node{
 	}
 	draw(){
 		const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-		g.setAttribute('transform', `x="${this.x}" y="${this.y}"`);
-
+		g.setAttribute('transform', `translate(${this.x},${this.y})`);
+		if (this.visible === false){
+		  g.style.visibility = 'hidden';
+		}
 		const txt = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+    	txt.innerHTML = this.icon;
 		txt.setAttribute("style", 'user-select : none;');
 		g.append(txt);
-
 		return g;
 	}
 	setX(x){
@@ -285,3 +304,5 @@ class Node{
 		this.visible != this.visible;
 	}
   }
+
+  const graph = new Graph();

@@ -14,17 +14,24 @@ class Draw{
 
     this.x;
     this.y;
+    
+    this.node1;
+    this.node2;
+    this.edge;
 
-    this.addEventListeners();
+    this.previousTool = null;
+    // this.addEventListeners();
     
     document.querySelectorAll('.icon').forEach((icon) => {
       icon.addEventListener('click', (event)=>{
         this.selectedIcon = event.target;
-        this.currentSymbol = new Shape(this.x, this.y, '', this.selectedIcon);
+        const node = new Node(this.x, this.y, icon.innerHTML, true);
+        console.log(node);
+        this.currentSymbol = graph.addNode(node);
+        console.log(graph.__nodes);
         if(this.currentSymbol){
-          this.element.appendChild(this.currentSymbol.element);
-          this.shapes.push(this.currentSymbol);
-          
+          const nodeHtml = this.currentSymbol.draw();
+          this.element.appendChild(nodeHtml);
         }
         this.currentSymbol = null;
         this.boardText.setAttribute("style", "display: none;");
@@ -33,28 +40,50 @@ class Draw{
     });
   }
 
+  onEvent(button) {
+    // Remove event listeners from previous button, if there is one
+    console.log(this.element);
+    this.element.removeEventListener('mousedown', this[`${this.previousButton}EventListener`]);
+    this.element.removeEventListener('mousemove', this[`${this.previousButton}MouseMoveEventListener`]);
+    this.element.removeEventListener('mouseup', this.mouseUpEventListener);
+    // if (this.previousButton !== null) {
+    //   this.element.removeEventListener('mousedown', this[`${this.previousButton}EventListener`]);
+    //   this.element.removeEventListener('mousemove', this[`${this.previousButton}MouseMoveEventListener`]);
+    //   this.element.removeEventListener('mouseup', this.mouseUpEventListener);
+    // }
+    
+    // Add event listeners for new button
+
+    this.element.addEventListener('mousedown', this[`${button}EventListener`].bind(this));
+    this.element.addEventListener('mousemove', this[`${button}MouseMoveEventListener`].bind(this));
+    this.element.addEventListener('mouseup', this.mouseUpEventListener.bind(this));
+
+    // Update previousButton
+    this.previousButton = button;
+    return;
+  }
   setMode(mode) {
     this.mode = mode;
-    this.addEventListeners();
+    // this.addEventListeners();
   }
 
-  addEventListeners() {
-    this.element.removeEventListener('mousedown', this.pencilEventListener);
-    this.element.removeEventListener('mousemove', this.pencilMouseMoveEventListener);
-    this.element.removeEventListener('mousedown', this.eraserEventListener);
-    this.element.removeEventListener('mousemove', this.eraserMouseMoveEventListener);
-    this.element.removeEventListener('mouseup', this.mouseUpEventListener);
+  // addEventListeners() {
+  //   this.element.removeEventListener('mousedown', this.pencilEventListener);
+  //   this.element.removeEventListener('mousemove', this.pencilMouseMoveEventListener);
+  //   this.element.removeEventListener('mousedown', this.eraserEventListener);
+  //   this.element.removeEventListener('mousemove', this.eraserMouseMoveEventListener);
+  //   this.element.removeEventListener('mouseup', this.mouseUpEventListener);
   
-    if (this.mode === 'pencil') {
-      this.element.addEventListener('mousedown', this.pencilEventListener = this.pencilEventListener.bind(this));
-      this.element.addEventListener('mousemove', this.pencilMouseMoveEventListener = this.pencilMouseMoveEventListener.bind(this));
-    } else if (this.mode === 'eraser') {
-      this.element.addEventListener('mousedown', this.eraserEventListener = this.eraserEventListener.bind(this));
-      this.element.addEventListener('mousemove', this.eraserMouseMoveEventListener = this.eraserMouseMoveEventListener.bind(this));
-    }
+  //   if (this.mode === 'pencil') {
+  //     this.element.addEventListener('mousedown', this.pencilEventListener = this.pencilEventListener.bind(this));
+  //     this.element.addEventListener('mousemove', this.pencilMouseMoveEventListener = this.pencilMouseMoveEventListener.bind(this));
+  //   } else if (this.mode === 'eraser') {
+  //     this.element.addEventListener('mousedown', this.eraserEventListener = this.eraserEventListener.bind(this));
+  //     this.element.addEventListener('mousemove', this.eraserMouseMoveEventListener = this.eraserMouseMoveEventListener.bind(this));
+  //   }
   
-    this.element.addEventListener('mouseup', this.mouseUpEventListener = this.mouseUpEventListener.bind(this));
-  }
+  //   this.element.addEventListener('mouseup', this.mouseUpEventListener = this.mouseUpEventListener.bind(this));
+  // }
 
   getMode(){
     return this.mode;
@@ -86,23 +115,37 @@ class Draw{
   }
 
   startShape(x, y, mode) {
-      this.currentShape = new Shape(x, y, mode);
-      this.element.appendChild(this.currentShape.element);
+      this.node1 = new Node(x,y);
+      this.edge = new Edge(this.node1, this.node1);
+      const line = this.edge.draw()
+      this.element.append(line);
+      // this.element.appendChild(this.currentShape.element);
   }
 
   updateShape(x, y, mode) {
-      if (this.currentShape !== null && mode === 'pencil') {
-        this.currentShape.addPoint(x, y, mode);
+      if (this.node1!==null && mode === 'pencil') {
+        this.node2 = new Node(x,y);
+        this.edge = new Edge(this.node1, this.node2);
+        const line = this.edge.draw()
+        this.element.removeChild(this.element.lastElementChild);
+        this.element.append(line);
       }
   }
 
   endShape() {
-      if (this.currentShape !== null) {
-        this.shapes.push(this.currentShape);
-        if(this.getLength(this.currentShape.element) > 20){
-        }
-        this.currentShape = null;
-      }
+      // if (this.currentShape !== null) {
+      //   this.shapes.push(this.currentShape);
+      //   this.currentShape = null;
+      // }
+      this.edge = new Edge(this.node1, this.node2);
+      graph.addEdge(this.edge);
+      const line = this.edge.draw()
+      this.element.removeChild(this.element.lastChild);
+      this.element.append(line);
+
+      this.node1 = null;
+      this.node2 = null;
+      this.edge = null;
   }
   getLength(element){
     if(element.tagName === 'line'){
