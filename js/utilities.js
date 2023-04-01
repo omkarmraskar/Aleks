@@ -19,8 +19,25 @@ class Utilities{
                 node = new Node(x2, y2);
             }
         }
-        return node;
-        
+        return node;  
+    }
+
+    deleteShortLine(node1, node2){
+        const x1 = node1.x;
+        const y1 = node1.y;
+        const x2 = node2.x;
+        const y2 = node2.y;
+        const distance = Math.sqrt(
+          (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)
+        );
+        if (distance <= 20) {
+          editor.iconPopup.classList.toggle("show");
+          editor.x = x1;
+          editor.y = y1;
+          editor.openIconPopup(x1, y1);
+          return true;
+        }
+        return false;        
     }
 }
-const utilites = new Utilities();
+const utilities = new Utilities();

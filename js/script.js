@@ -111,12 +111,11 @@ class Draw{
   
   mouseUpEventListener(event) {
     this.endShape();
-    snapping.deleteShortLine(event);
   }
 
   startShape(x, y) {
-      this.node1 = utilites.isClose(x, y);
-      this.node2 = utilites.isClose(x, y);
+      this.node1 = utilities.isClose(x, y);
+      this.node2 = utilities.isClose(x, y);
       this.edge = new Edge(this.node1, this.node2);
       const line = this.edge.draw()
       this.element.append(line);
@@ -126,7 +125,7 @@ class Draw{
   updateShape(x, y) {
       if (this.node1!==null && this.node2 !== null) {
         this.boardText.setAttribute("style", "display: none;");
-        this.node2 = utilites.isClose(x, y);
+        this.node2 = utilities.isClose(x, y);
         this.edge = new Edge(this.node1, this.node2);
         const line = this.edge.draw()
         this.element.removeChild(this.element.lastElementChild);
@@ -140,10 +139,13 @@ class Draw{
       //   this.currentShape = null;
       // }
       this.edge = new Edge(this.node1, this.node2);
-      graph.addEdge(this.edge);
-      const line = this.edge.draw()
       this.element.removeChild(this.element.lastChild);
-      this.element.append(line);
+      if(utilities.deleteShortLine(this.node1, this.node2) !== true ){
+        graph.addEdge(this.edge);
+        const line = this.edge.draw()
+        this.element.append(line);
+      }
+      
 
       
       this.node1 = null;

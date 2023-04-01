@@ -46,40 +46,6 @@ class Snapping {
   
       return distance;
     }
-    deleteShortLine(event) {
-      const shapeElementsToRemove = [];
-      for (const shape of editor.shapes) {
-        const element = shape.element;
-        if (element !== undefined && element.tagName === "line") {
-          const x1 = Number(element.getAttribute("x1"));
-          const y1 = Number(element.getAttribute("y1"));
-          const x2 = Number(element.getAttribute("x2"));
-          const y2 = Number(element.getAttribute("y2"));
-          const distance = Math.sqrt(
-            (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)
-          );
-          if (distance <= 20) {
-            shapeElementsToRemove.push(shape.element);
-            // if(distance === 0){
-            editor.iconPopup.classList.toggle("show");
-            editor.x = x1;
-            editor.y = y1;
-            editor.openIconPopup(event.offsetX, event.offsetY);
-            // }
-          }
-        }
-      }
-  
-      for (const element of shapeElementsToRemove) {
-        element.remove();
-        const index = editor.shapes.findIndex(
-          (shape) => shape.element === element
-        );
-        if (index !== -1) {
-          editor.shapes.splice(index, 1);
-        }
-      }
-    }
     highlightLines(x, y) {
       for (const shape of editor.shapes) {
         const element = shape.element;
