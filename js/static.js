@@ -2,8 +2,8 @@ function loadDynamicJson(data) {
     editor.element.innerHTML = ``;
     let lines = data.edges;
     for (const line of lines) {
-      editor.startShape(line.x1, line.y1, "pencil");
-      editor.updateShape(line.x2, line.y2, "pencil");
+      editor.startShape(line.x1, line.y1);
+      editor.updateShape(line.x2, line.y2);
       editor.endShape();
     }
   }
@@ -16,8 +16,8 @@ function loadDynamicJson(data) {
       .then((obj) => {
         let lines = obj.edges;
         for (const line of lines) {
-          editor.startShape(line.x1, line.y1, "pencil");
-          editor.updateShape(line.x2, line.y2, "pencil");
+          editor.startShape(line.x1, line.y1);
+          editor.updateShape(line.x2, line.y2);
           editor.endShape();
         }
       });

@@ -58,8 +58,8 @@ class Graph {
 	addEdge(edge) {
 	  const newEdge = {
 		edgeID: this.__edges.length + 1,
-		source: edge.node1,
-		target: edge.node2
+		source: edge.__nodes[0],
+		target: edge.__nodes[1]
 	  };
 	  this.__edges.push(newEdge);
 	}

@@ -102,7 +102,7 @@ class Draw{
   }
   
   pencilMouseMoveEventListener(event) {
-    this.updateShape(event.offsetX, event.offsetY, 'pencil');
+    this.updateShape(event.offsetX, event.offsetY);
   }
   
   eraserMouseMoveEventListener(event) {
@@ -114,17 +114,19 @@ class Draw{
     snapping.deleteShortLine(event);
   }
 
-  startShape(x, y, mode) {
-      this.node1 = new Node(x,y);
-      this.edge = new Edge(this.node1, this.node1);
+  startShape(x, y) {
+      this.node1 = utilites.isClose(x, y);
+      this.node2 = utilites.isClose(x, y);
+      this.edge = new Edge(this.node1, this.node2);
       const line = this.edge.draw()
       this.element.append(line);
       // this.element.appendChild(this.currentShape.element);
   }
 
-  updateShape(x, y, mode) {
-      if (this.node1!==null && mode === 'pencil') {
-        this.node2 = new Node(x,y);
+  updateShape(x, y) {
+      if (this.node1!==null && this.node2 !== null) {
+        this.boardText.setAttribute("style", "display: none;");
+        this.node2 = utilites.isClose(x, y);
         this.edge = new Edge(this.node1, this.node2);
         const line = this.edge.draw()
         this.element.removeChild(this.element.lastElementChild);
@@ -143,6 +145,7 @@ class Draw{
       this.element.removeChild(this.element.lastChild);
       this.element.append(line);
 
+      
       this.node1 = null;
       this.node2 = null;
       this.edge = null;
