@@ -47,12 +47,13 @@ class Graph {
 
 	// function to remove a node
 	removeNode(nodeID) {
-	  for (const node in this.__nodes) {
-		if (node.nodeID == nodeID) {
-		  this.__nodes = this.__nodes.filter((node) => node.nodeID != nodeID);
+		for (let i = 0; i < this.__nodes.length; i++) {
+		  if (this.__nodes[i].nodeID === nodeID) {
+			this.__nodes.splice(i, 1);
+			break;
+		  }
 		}
 	  }
-	}
 
 	// function to add an edge in the graph
 	addEdge(edge) {
@@ -89,12 +90,13 @@ class Graph {
 
 	// function to remove an edge
 	removeEdge(edgeID) {
-	  for (const edge in this.__edges) {
-		if (edge.edgeID == edgeID) {
-		  this.__edges = this.__edges.filter((edge) => edge.edgeID != edgeID);
+		for (let i = 0; i < this.__edges.length; i++) {
+		  if (this.__edges[i].edgeID === edgeID) {
+			this.__edges.splice(i, 1);
+			break;
+		  }
 		}
 	  }
-	}
 
 	// function to return true if there is an edge in the graph connecting the two nodes passed as parameters, false otherwise.
 	hasEdgeBetweenNodes(node1, node2) {
@@ -119,7 +121,17 @@ class Graph {
 	}
 
 	draw(){
-		const board = document.getElementById('board');
+		for(const edge of this.__edges){
+			const edge1 = new Edge(edge.source, edge.target);
+			const line = edge1.draw();
+			editor.element.append(line)
+
+		}
+		for(const node of this.__nodes){
+			const node1 = new Node(node.x, node.y, node.icon, node.visible);
+			const g = node1.draw();
+			editor.element.append(g);
+		}
 		
 	}
   }

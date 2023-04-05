@@ -16,10 +16,10 @@
         ],
     "nodes":[
         {
-            "x":"",
-            "y":"",
-            "value":"",
-            "isvisible": ""
+            "x":"400",
+            "y":"300",
+            "icon":"H",
+            "visible": true
             }
         ]
 

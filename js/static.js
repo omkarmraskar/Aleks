@@ -1,10 +1,14 @@
 function loadDynamicJson(data) {
     editor.element.innerHTML = ``;
     let lines = data.edges;
+    let symbols = obj.nodes;
+    for(const node of symbols){
+      editor.newNode(node.x, node.y, node.icon, node.visible);
+    }
     for (const line of lines) {
-      editor.startShape(line.x1, line.y1);
-      editor.updateShape(line.x2, line.y2);
-      editor.endShape();
+      editor.startEdge(line.x1, line.y1);
+      editor.updateEdge(line.x2, line.y2);
+      editor.endEdge();
     }
   }
   function loadStaticJson() {
@@ -15,10 +19,14 @@ function loadDynamicJson(data) {
       })
       .then((obj) => {
         let lines = obj.edges;
+        let symbols = obj.nodes;
         for (const line of lines) {
-          editor.startShape(line.x1, line.y1);
-          editor.updateShape(line.x2, line.y2);
-          editor.endShape();
+          editor.startEdge(line.x1, line.y1);
+          editor.updateEdge(line.x2, line.y2);
+          editor.endEdge();
+        }
+        for(const node of symbols){
+          editor.newNode(node.x, node.y, node.icon, node.visible);
         }
       });
   }
