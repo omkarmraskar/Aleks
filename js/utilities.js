@@ -85,12 +85,35 @@ class Utilities{
         return distance;
     }
 
-    highlightLines(x, y) {
+highlightLines(x, y) {
       for (const element of editor.element.children) {
-        let distance = snapping.getPerpendicularDistance(x, y, element);
+        let distance;
+        if(element.tagName === 'line'){
+          const x1 = parseInt(element.getAttribute("x1"));
+          const y1 = parseInt(element.getAttribute("y1"));
+          const x2 = parseInt(element.getAttribute("x2"));
+          const y2 = parseInt(element.getAttribute("y2"));     
+          distance = this.getPerpendicularDistance(x, y, new Node(x1, y1), new Node(x2, y2));     
+        }
+        else if(element.tagName === 'g'){
+            const htmlTag = element.getAttribute('transform');
+            // Regular expression to extract the numbers inside the parentheses of the translate() function
+            let pattern = /translate\((\d+),(\d+)\)/;
+
+            // Extracting the values using the regular expression
+            let match = htmlTag.match(pattern);
+            // Storing the values in variables x and y
+            let x1, y1;
+            if (match) {
+              x1 = parseInt(match[1]);
+              y1 = parseInt(match[2]);
+            }
+            distance = this.getPerpendicularDistance(x, y, new Node(x1, y1));
+        }
+        // let distance = this.getPerpendicularDistance(x, y, x1, y1, x2, y2);
         if (distance <= 15) {
           element.classList.add("highlight");
-        } else {
+        } else {  
           element.classList.remove("highlight");
         }
       }

@@ -2,6 +2,8 @@ class Graph {
 	constructor() {
 	  this.__nodes = [];
 	  this.__edges = [];
+	  this.edge_id = 0;
+	  this.node_id = 0;
 	}
 
 	// function to return if a graph is empty or not
@@ -11,8 +13,9 @@ class Graph {
 
 	// function to add a new node in the graph
 	addNode(node) {
-	  const newNode = {
-		nodeID: this.__nodes.length + 1,
+	
+	const newNode = {
+		nodeID: ++this.node_id,
 		x: node.x,
 		y: node.y,
 		visible : node.visible,
@@ -57,8 +60,9 @@ class Graph {
 
 	// function to add an edge in the graph
 	addEdge(edge) {
-	  const newEdge = {
-		edgeID: this.__edges.length + 1,
+	const newEdge = {
+		edgeID: ++this.edge_id,
+
 		source: edge.__nodes[0],
 		target: edge.__nodes[1]
 	  };
