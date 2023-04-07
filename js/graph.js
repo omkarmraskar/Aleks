@@ -123,7 +123,23 @@ class Graph {
 	  };
 	  return recall;
 	}
-
+	isNodePresent(node){
+		for(let i=0; i<this.__nodes.length; i++){
+			if((parseInt(node.x) === parseInt(this.__nodes[i].x)) && (parseInt(node.y) === parseInt(this.__nodes[i].y))){
+				return true;
+			}
+		}
+		return false;
+	}
+	isEdgePresent(node1, node2){
+		for(let i=0; i< this.__edges.length; i++){
+			if((node1.x === this.__edges[i].source.x) && (node1.y === this.__edges[i].source.y) &&
+			(node2.x === this.__edges[i].target.x) && (node2.y === this.__edges[i].target.y)){
+				return true;
+			}
+		}
+		return false
+	}
 	draw(){
 		for(const edge of this.__edges){
 			const edge1 = new Edge(edge.source, edge.target);

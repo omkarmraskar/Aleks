@@ -108,9 +108,18 @@ class Draw{
       this.edge = new Edge(this.node1, this.node2);
       this.element.removeChild(this.element.lastChild);
       if(!utilities.deleteShortLine(this.node1, this.node2)){
-        graph.addEdge(this.edge);
-        const line = this.edge.draw()
-        this.element.append(line);
+
+        if(!graph.isEdgePresent(this.node1, this.node2)){
+          graph.addEdge(this.edge);
+          if(!graph.isNodePresent(this.node1)){
+            graph.addNode(this.node1);
+          }
+          if(!graph.isNodePresent(this.node2)){
+            graph.addNode(this.node2);
+          }
+          const line = this.edge.draw()
+          this.element.append(line);          
+        }
       }
 
       this.node1 = null;

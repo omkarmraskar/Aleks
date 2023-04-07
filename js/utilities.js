@@ -32,12 +32,10 @@ class Utilities{
               (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)
             );
             if (distance <= 20) {
-              if(distance === 0){
-                editor.iconPopup.classList.toggle("show");
-                editor.x = x1;
-                editor.y = y1;
-                editor.openIconPopup(x1, y1);            
-              }
+              editor.iconPopup.classList.toggle("show");
+              editor.x = x1;
+              editor.y = y1;
+              editor.openIconPopup(x1, y1);
               return true;
             }            
         }
