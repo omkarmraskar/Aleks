@@ -2,21 +2,15 @@ class Utilities{
     isCloseLine(x, y){
         let node = new Node(x, y);
 
-        const edges = graph.getRecall().edges;
-        for(let i=0; i<edges.length; i++){
-            const x1 = edges[i].source.x;
-            const y1 = edges[i].source.y;
-            const x2 = edges[i].target.x;
-            const y2 = edges[i].target.y;
+        const nodes = graph.getRecall().nodes;
+        for(let i=0; i<nodes.length; i++){
+            const x1 = nodes[i].x;
+            const y1 = nodes[i].y;
             
-            const start = Math.sqrt( (x - x1) ** 2 + (y - y1) ** 2 );
-            const end = Math.sqrt( (x - x2) ** 2 + (y - y2) ** 2 );
+            const distance = Math.sqrt( (x - x1) ** 2 + (y - y1) ** 2 );
 
-            if(start <= 10){
-                node = new Node(x1, y1);
-            }
-            else if(end <= 10){
-                node = new Node(x2, y2);
+            if(distance <= 10){
+              node = new Node(x1, y1);
             }
         }
         return node;  
@@ -83,7 +77,7 @@ class Utilities{
         return distance;
     }
 
-highlightLines(x, y) {
+    highlightLines(x, y) {
       for (const element of editor.element.children) {
         let distance;
         if(element.tagName === 'line'){
@@ -116,5 +110,16 @@ highlightLines(x, y) {
         }
       }
     }
+    selectIcon() {
+      document.querySelectorAll(".icon").forEach((icon) => {
+        icon.addEventListener("click", (event) => {
+          editor.selectedIcon = event.target;
+          editor.newNode(editor.x, editor.y, icon.innerHTML, true);
+          editor.boardText.setAttribute("style", "display: none;");
+          editor.iconPopup.classList.toggle("show");
+        });
+      });
+    }
 }
 const utilities = new Utilities();
+utilities.selectIcon();
