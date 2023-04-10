@@ -140,6 +140,19 @@ class Graph {
 		}
 		return false
 	}
+	
+	emptyGraph() {
+		this.__edges = [];
+		this.__nodes = [];
+		this.edge_id = 0;
+		this.node_id = 0;
+	}
+	resetGraph(graph){
+		console.log(graph);
+		this.__edges = graph.edges;
+		this.__nodes = graph.nodes;
+		this.draw();
+	}
 	draw(){
 		for(const edge of this.__edges){
 			const edge1 = new Edge(edge.source, edge.target);
@@ -154,7 +167,7 @@ class Graph {
 		}
 		
 	}
-  }
+}
 
 class Edge{
 
