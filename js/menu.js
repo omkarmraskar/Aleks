@@ -4,6 +4,8 @@ class Menu{
     this.clearButton = document.getElementById("clear-board");
     this.pencilSelect = document.getElementById("pencil-select");
     this.eraseSelect = document.getElementById("eraser-select");
+    this.undo = document.getElementById("undo-button");
+    this.redo = document.getElementById("redo-button");
 
     this.pencilSelect.classList.add('clicked');
     editor.element.setAttribute("style", `cursor: url(icons/pencil.svg), auto`);
@@ -13,8 +15,16 @@ class Menu{
   setEventListener(){
     this.clearButton.addEventListener('click', () => {
       editor.element.innerHTML = ``;
+      graph.emptyGraph();
       this.clearButton.classList.add("clicked");
       setTimeout(() => {this.clearButton.classList.remove("clicked");}, 50);
+    });
+    
+    this.undo.addEventListener('click', () => {
+      undoRedo.undo();
+    });
+    this.redo.addEventListener('click', () => {
+      undoRedo.redo();
     });
 
     this.eraseSelect.addEventListener('click', () => {

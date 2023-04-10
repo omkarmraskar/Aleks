@@ -23,22 +23,24 @@ class Draw{
     this.mousemove = null
     this.mouseup = null;
     this.onEvent();
-    document.querySelectorAll('.icon').forEach((icon) => {
-      icon.addEventListener('click', (event)=>{
-        this.newNode(this.x, this.y, icon.innerHTML, true);
-        this.boardText.setAttribute("style", "display: none;");
-        this.iconPopup.classList.toggle('show');
-      });
-    });
+    // document.querySelectorAll('.icon').forEach((icon) => {
+    //   icon.addEventListener('click', (event)=>{
+    //     this.newNode(this.x, this.y, icon.innerHTML, true);
+    //     this.boardText.setAttribute("style", "display: none;");
+    //     this.iconPopup.classList.toggle('show');
+    //   });
+    // });
     
   }
 
   newNode(x, y, icon, visible){
-    const node = new Node(x, y, icon, visible);
+    const node = new Node(parseInt(x), parseInt(y), icon, visible);
     this.currentSymbol = graph.addNode(node);
     const nodeHTML = this.currentSymbol.draw();
     this.element.appendChild(nodeHTML);
     this.currentSymbol = null;
+
+    undoRedo.saveState();
   }
 
   onEvent(button = 'pencil') {
@@ -108,7 +110,6 @@ class Draw{
       this.edge = new Edge(this.node1, this.node2);
       this.element.removeChild(this.element.lastChild);
       if(!utilities.deleteShortLine(this.node1, this.node2)){
-
         if(!graph.isEdgePresent(this.node1, this.node2)){
           graph.addEdge(this.edge);
           if(!graph.isNodePresent(this.node1)){
@@ -120,6 +121,7 @@ class Draw{
           const line = this.edge.draw()
           this.element.append(line);          
         }
+        undoRedo.saveState();
       }
 
       this.node1 = null;
@@ -138,8 +140,8 @@ class Draw{
 
   openIconPopup(x, y) {
     // Set the position of the icon popup
-    this.iconPopup.style.left = x + 102 + "px";
-    this.iconPopup.style.top = y + 42 + "px";
+    this.iconPopup.style.left = x + 115 + "px";
+    this.iconPopup.style.top = y + 52 + "px";
   }
 
   eraseShapes(x, y) {
@@ -176,6 +178,8 @@ class Draw{
     }
     this.element.innerHTML = "";
     graph.draw();
+
+    undoRedo.saveState();
   } 
 }
 
