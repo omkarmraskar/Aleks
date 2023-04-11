@@ -7,7 +7,10 @@ class UndoRedo {
   
     saveState() {
       const recall = JSON.parse(JSON.stringify(this.graph.getRecall()));
-      this.undoStack.push(recall);
+      if(recall){
+        this.undoStack.push(recall);
+      }
+      
       this.redoStack = [];
     }
   
@@ -30,7 +33,7 @@ class UndoRedo {
     }
   
     canUndo() {
-      return this.undoStack.length > 1;
+      return this.undoStack.length > 0;
     }
   
     canRedo() {

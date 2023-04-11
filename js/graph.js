@@ -147,12 +147,14 @@ class Graph {
 		this.edge_id = 0;
 		this.node_id = 0;
 		editor.element.innerHTML = '';
+		
 	}
 	resetGraph(graph){
-		console.log(graph);
-		this.__edges = graph.edges;
-		this.__nodes = graph.nodes;
-		this.draw();
+		if(graph){
+			this.__edges = graph.edges;
+			this.__nodes = graph.nodes;
+			this.draw();
+		}
 	}
 	draw(){
 		for(const edge of this.__edges){
