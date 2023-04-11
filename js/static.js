@@ -40,7 +40,7 @@ class Static{
       editor.updateEdge(line.x2, line.y2);
       editor.endEdge();
     }
-    undoRedo.saveState();
+    // undoRedo.saveState();
   }
 
   loadStaticJson() {

@@ -39,8 +39,6 @@ class Snapping {
         const distanceStart = Math.sqrt((newNodex - x1) ** 2 + (newNodey - y1) ** 2);
         const distanceEnd = Math.sqrt((newNodex - x2) ** 2 + (newNodey - y2) ** 2);
 
-        console.log(distanceEnd + " " + distanceStart);
-
         if(distanceStart <= 10){
           if (x1 < x2) {
             if (y1 < y2) {
@@ -87,7 +85,6 @@ class Snapping {
       }
       newNode.x = x;
       newNode.y = y;
-      console.log(x+ " " + y);
     }
   }
   const snapping = new Snapping();

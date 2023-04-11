@@ -13,7 +13,6 @@ class UndoRedo {
   
     undo() {
       if (this.canUndo()) {
-        console.log('undo');
         const recall = this.undoStack.pop();
         this.redoStack.push(recall);
         this.graph.emptyGraph();
@@ -23,7 +22,6 @@ class UndoRedo {
   
     redo() {
       if (this.canRedo()) {
-        console.log('undo')
         const recall = this.redoStack.pop();
         this.undoStack.push(recall);
         this.graph.emptyGraph();
