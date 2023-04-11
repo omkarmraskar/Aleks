@@ -146,6 +146,7 @@ class Graph {
 		this.__nodes = [];
 		this.edge_id = 0;
 		this.node_id = 0;
+		editor.element.innerHTML = '';
 	}
 	resetGraph(graph){
 		console.log(graph);

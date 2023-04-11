@@ -35,11 +35,11 @@ class Draw{
 
   newNode(x, y, icon, visible){
     const node = new Node(parseInt(x), parseInt(y), icon, visible);
+    snapping.snapSymbol(node);
     this.currentSymbol = graph.addNode(node);
     const nodeHTML = this.currentSymbol.draw();
     this.element.appendChild(nodeHTML);
     this.currentSymbol = null;
-
     undoRedo.saveState();
   }
 
@@ -62,12 +62,14 @@ class Draw{
 
   pencilEventListener(event) {
     if (event.button === 0) {
-      this.startEdge(event.offsetX, event.offsetY, 'pencil');
+      this.startEdge(event.offsetX, event.offsetY);
     }
   }
   
   pencilMouseMoveEventListener(event) {
-    this.updateEdge(event.offsetX, event.offsetY, 'pencil');
+    if(this.node1){
+      this.updateEdge(event.offsetX, event.offsetY);
+    }
   }
   
   pencilMouseUpEventListener(event) {

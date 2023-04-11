@@ -61,8 +61,8 @@ class Static{
         for(const node of symbols){
           editor.newNode(node.x, node.y, node.icon, node.visible);
         }
-        undoRedo.saveState();
-      });
+      })
+      .catch(err => console.log(err));
   }  
 }
 

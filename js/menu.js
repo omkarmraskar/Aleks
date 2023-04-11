@@ -23,10 +23,19 @@ class Menu{
     this.undo.addEventListener('click', () => {
       undoRedo.undo();
     });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'z' && event.ctrlKey) {
+        undoRedo.undo();
+      }
+    });
     this.redo.addEventListener('click', () => {
       undoRedo.redo();
     });
-
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'y' && event.ctrlKey) {
+        undoRedo.redo();
+      }
+    });
     this.eraseSelect.addEventListener('click', () => {
       this.pencilSelect.classList.remove('clicked');
       this.eraseSelect.classList.add('clicked');
