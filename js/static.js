@@ -7,7 +7,7 @@ class Static{
 
     jsonForm.addEventListener("submit", event => event.preventDefault());
     parseButton.addEventListener("click", this.parseFile.bind(this));    
-    eraseDynamic.addEventListener("click", this.loadStaticJson());    
+    eraseDynamic.addEventListener("click", this.loadStaticJson.bind(this));    
   }
 
   parseFile(){
@@ -71,6 +71,7 @@ class Static{
         }
         if(lines || symbols){
           undoRedo.saveState();
+          console.log(undoRedo.undoStack);
         }
       })
       .catch(err => console.log(err));
