@@ -16,6 +16,7 @@ class Menu{
     this.clearButton.addEventListener('click', () => {
       editor.element.innerHTML = ``;
       graph.emptyGraph();
+      undoRedo.saveState();
       this.clearButton.classList.add("clicked");
       setTimeout(() => {this.clearButton.classList.remove("clicked");}, 50);
     });

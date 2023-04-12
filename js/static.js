@@ -2,31 +2,33 @@
 class Static{
   constructor(){
     const jsonForm = document.getElementById("jsonForm");
-    jsonForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-    });
     const parseButton = document.getElementById("parseButton");
-    parseButton.addEventListener("click", () => {
-      const fileInput = document.getElementById("jsonFileInput");
-      if (!fileInput.files[0]) {
-        alert("No file chosen");
-      } 
-      else {
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-        reader.addEventListener("load", (event) => {
-          const fileContent = event.target.result;
-          const json = JSON.parse(fileContent);
-          this.loadDynamicJson(json);
-        });
-        reader.readAsText(file);
-      }
-    });
     const eraseDynamic = document.getElementById("redraw");
-    eraseDynamic.addEventListener("click", () => {
-      this.loadStaticJson();
-    });    
+
+    jsonForm.addEventListener("submit", event => event.preventDefault());
+    parseButton.addEventListener("click", this.parseFile.bind(this));    
+    eraseDynamic.addEventListener("click", this.loadStaticJson());    
   }
+
+  parseFile(){
+    const fileInput = document.getElementById("jsonFileInput");
+
+    if (!fileInput.files[0]) {
+      alert("No file chosen");
+    }
+
+    else {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.addEventListener("load", (event) => {
+        const fileContent = event.target.result;
+        const json = JSON.parse(fileContent);
+        this.loadDynamicJson(json);
+      });
+      reader.readAsText(file);
+    }
+  }
+
   loadDynamicJson(data) {
     editor.element.innerHTML = ``;
     graph.emptyGraph();
@@ -34,13 +36,17 @@ class Static{
     let symbols = obj.nodes;
     for(const node of symbols){
       editor.newNode(node.x, node.y, node.icon, node.visible);
+      undoRedo.undoStack.pop();
     }
     for (const line of lines) {
       editor.startEdge(line.x1, line.y1);
       editor.updateEdge(line.x2, line.y2);
       editor.endEdge();
+      undoRedo.undoStack.pop();
     }
-    // undoRedo.saveState();
+    if(lines || symbols){
+      undoRedo.saveState();
+    }
   }
 
   loadStaticJson() {
@@ -57,9 +63,14 @@ class Static{
           editor.startEdge(parseInt(line.x1), parseInt(line.y1));
           editor.updateEdge(parseInt(line.x2), parseInt(line.y2));
           editor.endEdge();
+          undoRedo.undoStack.pop();
         }
         for(const node of symbols){
           editor.newNode(node.x, node.y, node.icon, node.visible);
+          undoRedo.undoStack.pop();
+        }
+        if(lines || symbols){
+          undoRedo.saveState();
         }
       })
       .catch(err => console.log(err));
