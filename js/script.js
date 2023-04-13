@@ -1,26 +1,24 @@
-
-class Draw{
-
-  constructor(id){
+class Draw {
+  constructor(id) {
     this.element = document.getElementById(id);
     this.shapes = [];
-    this.currentShape = null; 
+    this.currentShape = null;
     this.currentSymbol = null;
-    this.boardText = document.getElementById('board-text');
-    
+    this.boardText = document.getElementById("board-text");
+
     this.mode = "";
-    this.iconPopup = document.getElementById('icon-popup');
-    this.selectedIcon = '';
+    this.iconPopup = document.getElementById("icon-popup");
+    this.selectedIcon = "";
 
     this.x;
     this.y;
-    
+
     this.node1;
     this.node2;
     this.edge;
 
     this.mousedown = null;
-    this.mousemove = null
+    this.mousemove = null;
     this.mouseup = null;
     this.onEvent();
     // document.querySelectorAll('.icon').forEach((icon) => {
@@ -30,10 +28,9 @@ class Draw{
     //     this.iconPopup.classList.toggle('show');
     //   });
     // });
-    
   }
 
-  newNode(x, y, icon, visible){
+  newNode(x, y, icon, visible) {
     const node = new Node(parseInt(x), parseInt(y), icon, visible);
     // snapping.snapSymbol(node);
     this.currentSymbol = graph.addNode(node);
@@ -43,21 +40,20 @@ class Draw{
     undoRedo.saveState();
   }
 
-  onEvent(button = 'pencil') {
+  onEvent(button = "pencil") {
     // Remove event listeners from previous button, if there is one
-    this.element.removeEventListener('mousedown', this.mousedown);
-    this.element.removeEventListener('mousemove', this.mousemove);
-    this.element.removeEventListener('mouseup', this.mouseup);
-    
+    this.element.removeEventListener("mousedown", this.mousedown);
+    this.element.removeEventListener("mousemove", this.mousemove);
+    this.element.removeEventListener("mouseup", this.mouseup);
+
     // Add event listeners for new button
     this.mousedown = this[`${button}EventListener`].bind(this);
     this.mousemove = this[`${button}MouseMoveEventListener`].bind(this);
     this.mouseup = this[`${button}MouseUpEventListener`].bind(this);
 
-    this.element.addEventListener('mousedown', this.mousedown);
-    this.element.addEventListener('mousemove', this.mousemove);
-    this.element.addEventListener('mouseup', this.mouseup);
-
+    this.element.addEventListener("mousedown", this.mousedown);
+    this.element.addEventListener("mousemove", this.mousemove);
+    this.element.addEventListener("mouseup", this.mouseup);
   }
 
   pencilEventListener(event) {
@@ -65,19 +61,19 @@ class Draw{
       this.startEdge(event.offsetX, event.offsetY);
     }
   }
-  
+
   pencilMouseMoveEventListener(event) {
-    if(this.node1){
+    if (this.node1) {
       this.updateEdge(event.offsetX, event.offsetY);
     }
   }
-  
+
   pencilMouseUpEventListener(event) {
-    if(event.button === 0){
+    if (event.button === 0) {
       this.endEdge();
     }
   }
-  
+
   eraserEventListener(event) {
     if (event.button === 0) {
       this.eraseShapes(event.offsetX, event.offsetY);
@@ -87,58 +83,57 @@ class Draw{
   eraserMouseMoveEventListener(event) {
     utilities.highlightLines(event.offsetX, event.offsetY);
   }
-  
-  eraserMouseUpEventListener(event){}
+
+  eraserMouseUpEventListener(event) {}
 
   startEdge(x, y) {
-      this.node1 = utilities.isCloseLine(x, y);
-      this.node2 = utilities.isCloseLine(x, y);
-      this.edge = new Edge(this.node1, this.node2);
-      const line = this.edge.draw()
-      this.element.append(line);
+    this.node1 = utilities.isCloseLine(x, y);
+    this.node2 = utilities.isCloseLine(x, y);
+    this.edge = new Edge(this.node1, this.node2);
+    const line = this.edge.draw();
+    this.element.append(line);
   }
 
   updateEdge(x, y) {
-      if (this.node1!==null && this.node2 !== null) {
-        this.boardText.setAttribute("style", "display: none;");
-        this.node2 = utilities.isCloseLine(x, y);
-        this.edge = new Edge(this.node1, this.node2);
-        const line = this.edge.draw()
-        this.element.removeChild(this.element.lastElementChild);
-        this.element.append(line);
-      }
+    if (this.node1 !== null && this.node2 !== null) {
+      this.boardText.setAttribute("style", "display: none;");
+      this.node2 = utilities.isCloseLine(x, y);
+      this.edge = new Edge(this.node1, this.node2);
+      const line = this.edge.draw();
+      this.element.removeChild(this.element.lastElementChild);
+      this.element.append(line);
+    }
   }
 
   endEdge() {
-      
-      this.edge = new Edge(this.node1, this.node2);
-      this.element.removeChild(this.element.lastChild);
-      if(!utilities.deleteShortLine(this.node1, this.node2)){
-        if(!graph.isEdgePresent(this.node1, this.node2)){
-          graph.addEdge(this.edge);
-          if(!graph.isNodePresent(this.node1)){
-            graph.addNode(this.node1);
-          }
-          if(!graph.isNodePresent(this.node2)){
-            graph.addNode(this.node2);
-          }
-          const line = this.edge.draw()
-          this.element.append(line);          
+    this.edge = new Edge(this.node1, this.node2);
+    this.element.removeChild(this.element.lastChild);
+    if (!utilities.deleteShortLine(this.node1, this.node2)) {
+      if (!graph.isEdgePresent(this.node1, this.node2)) {
+        graph.addEdge(this.edge);
+        if (!graph.isNodePresent(this.node1)) {
+          graph.addNode(this.node1);
         }
-        undoRedo.saveState();
+        if (!graph.isNodePresent(this.node2)) {
+          graph.addNode(this.node2);
+        }
+        const line = this.edge.draw();
+        this.element.append(line);
       }
+      undoRedo.saveState();
+    }
 
-      this.node1 = null;
-      this.node2 = null;
-      this.edge = null;
+    this.node1 = null;
+    this.node2 = null;
+    this.edge = null;
   }
-  getLength(element){
-    if(element.tagName === 'line'){
+  getLength(element) {
+    if (element.tagName === "line") {
       const x1 = Number(element.getAttribute("x1"));
       const y1 = Number(element.getAttribute("y1"));
       const x2 = Number(element.getAttribute("x2"));
       const y2 = Number(element.getAttribute("y2"));
-      return Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+      return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
     }
   }
 
@@ -148,6 +143,17 @@ class Draw{
     this.iconPopup.style.top = y + 52 + "px";
   }
 
+  selectIcon() {
+    document.querySelectorAll(".icon").forEach((icon) => {
+      icon.addEventListener("click", (event) => {
+        editor.selectedIcon = event.target;
+        editor.newNode(editor.x, editor.y, icon.innerHTML, true);
+        editor.boardText.setAttribute("style", "display: none;");
+        editor.iconPopup.classList.toggle("show");
+      });
+    });
+  }
+
   eraseShapes(x, y) {
     const edgeToRemove = [];
     const nodeToRemove = [];
@@ -155,28 +161,39 @@ class Draw{
     const curGraph = graph.getRecall();
     const edges = curGraph.edges;
     const nodes = curGraph.nodes;
-    
 
-    for(let i=0; i<edges.length; i++){
-      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(edges[i].source.x), parseInt(edges[i].source.y), parseInt(edges[i].target.x), parseInt(edges[i].target.y));
-      if(distance <= 15){
+    for (let i = 0; i < edges.length; i++) {
+      const distance = utilities.getPerpendicularDistance(
+        parseInt(x),
+        parseInt(y),
+        parseInt(edges[i].source.x),
+        parseInt(edges[i].source.y),
+        parseInt(edges[i].target.x),
+        parseInt(edges[i].target.y)
+      );
+      if (distance <= 15) {
         edgeToRemove.push(edges[i].edgeID);
       }
     }
 
-    for(let i=0; i<nodes.length; i++){
-      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(nodes[i].x), parseInt(nodes[i].y));
-      if(distance <= 15){
+    for (let i = 0; i < nodes.length; i++) {
+      const distance = utilities.getPerpendicularDistance(
+        parseInt(x),
+        parseInt(y),
+        parseInt(nodes[i].x),
+        parseInt(nodes[i].y)
+      );
+      if (distance <= 15) {
         nodeToRemove.push(nodes[i].nodeID);
       }
     }
 
-    for(let i=0; i<edgeToRemove.length; i++){
-      const edgeID = edgeToRemove[i]
+    for (let i = 0; i < edgeToRemove.length; i++) {
+      const edgeID = edgeToRemove[i];
       graph.removeEdge(edgeID);
     }
 
-    for(let i=0; i<nodeToRemove.length; i++){
+    for (let i = 0; i < nodeToRemove.length; i++) {
       const nodeID = nodeToRemove[i];
       graph.removeNode(nodeID);
     }
@@ -184,7 +201,7 @@ class Draw{
     graph.draw();
 
     undoRedo.saveState();
-  } 
+  }
 }
 
-const editor = new Draw('board');
+const editor = new Draw("board");
