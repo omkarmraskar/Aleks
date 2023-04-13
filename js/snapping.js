@@ -32,59 +32,74 @@ class Snapping {
         const x2 = edges[i].target.x;
         const y2 = edges[i].target.y;
 
-        
         const sine = this.getSine(x1, y1, x2, y1);
         const cosine = this.getCosine(x1, y1, x2, y2);
 
-        const distanceStart = Math.sqrt((newNodex - x1) ** 2 + (newNodey - y1) ** 2);
-        const distanceEnd = Math.sqrt((newNodex - x2) ** 2 + (newNodey - y2) ** 2);
+        const distanceStart = Math.sqrt((x - x1) ** 2 + (y - y1) ** 2);
+        const distanceEnd = Math.sqrt((x - x2) ** 2 + (y - y2) ** 2);
 
         if(distanceStart <= 10){
-          if (x1 < x2) {
-            if (y1 < y2) {
-              x = x1 - 10 * sine;
-              y = y1 - 10 * cosine;
-            } 
-            else {
-              x = x1 - 10 * sine;
-              y = y1 + 10 * cosine;
+          if(x1 < x2){
+            if(y1 < y2){
+              x = x1 - (10 * sine);
+              y = y1 - (10 * cosine);
             }
-          } 
-          else {
-            if (y1 < y2) {
-              x = x1 - 10 * sine;
-              y = y1 + 10 * cosine;
-            } 
-            else {
-              x = x1 - 10 * sine;
-              y = y1 + 10 * cosine;
-            }
-          }       
-        }
-        if (distanceEnd <= 10) {
-          if (x1 < x2) {
-            if (y1 < y2) {
-              x = x2 + 10 * sine;
-              y = y2 + 10 * cosine;
-            } 
-            else {
-              x = x2 + 10 * sine;
-              y = y2 + 10 * cosine;
-            }
-          } else {
-            if (y1 < y2) {
-              x = x2 + 10 * sine;
-              y = y2 + 10 * cosine;
-            } 
-            else {
-              x = x2 + 10 * sine;
-              y = y2 + 10 * cosine;
+            else{
+              x = x1 - (10 * sine);
+              y = y1 + (10 * cosine);
             }
           }
-        }        
+          else {
+            if(y1 < y2){
+              x = x1 + (10 * sine);
+              y = y1 - (10 * cosine);
+            }
+            else{
+              x = x1 + (10 * sine);
+              y = y1 + (10 * cosine);
+            }
+          }
+        }
+        if(distanceEnd <= 10){
+          if(x1 < x2){
+            if(y1 < y2){
+              x = x2 + (10 * sine);
+              y = y2 + (10 * cosine);
+            }
+            else{
+              x = x2 + (10 * sine);
+              y = y2 - (10 * cosine);
+            }
+          }
+          else {
+            if(y1 < y2){
+              x = x2 - (10 * sine);
+              y = y2 + (10 * cosine);
+            }
+            else{
+              x = x2 - (10 * sine);
+              y = y2 - (10 * cosine);
+            }
+          }
+        }       
       }
       newNode.x = x;
       newNode.y = y;
+    }
+    addGroupAtLineEnd(x1, y1, x2, y2, x, y) {
+      
+      const slope = (y2 - y1) / (x2 - x1);
+    
+      const xNew = x2 + (y1 - y2) / slope;
+    
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+    
+      const xOffset = 10 * Math.cos(angle);
+      const yOffset = 10 * Math.sin(angle);
+
+      x = xNew + xOffset;
+      y = y1 + yOffset;
+    
     }
   }
   const snapping = new Snapping();

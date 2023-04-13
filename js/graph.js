@@ -143,9 +143,7 @@ class Graph {
 	
 	emptyGraph() {
 		this.__edges = [];
-		this.__nodes = [];
-		this.edge_id = 0;
-		this.node_id = 0;
+		this.__nodes = [];	
 		editor.element.innerHTML = '';
 		
 	}
@@ -165,8 +163,10 @@ class Graph {
 		}
 		for(const node of this.__nodes){
 			const node1 = new Node(node.x, node.y, node.icon, node.visible);
-			const g = node1.draw();
-			editor.element.append(g);
+			if(node.visible){
+				const g = node1.draw();
+				editor.element.append(g);				
+			}
 		}
 		
 	}
