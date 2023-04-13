@@ -1,59 +1,56 @@
+class Menu{
+  constructor(){
+    
+    this.clearButton = document.getElementById("clear-board");
+    this.pencilSelect = document.getElementById("pencil-select");
+    this.eraseSelect = document.getElementById("eraser-select");
+    this.undo = document.getElementById("undo-button");
+    this.redo = document.getElementById("redo-button");
 
-// clear board button
-const clearButton = document.getElementById("clear-board");
-clearButton.addEventListener("mousedown", () => {
-  if (!clearButton.classList.contains("clicked")) {
-    clearButton.classList.add("clicked");
-  }
-});
-clearButton.addEventListener("mouseup", () => {
-  if (clearButton.classList.contains("clicked")) {
-    clearButton.classList.remove("clicked");
-  }
-});
-clearButton.addEventListener("click", () => {
-  editor.element.innerHTML = ``;
-});
-
-// pencil
-const pencilSelect = document.getElementById("pencil-select");
-pencilSelect.addEventListener("click", () => {
-  if (eraseSelect.classList.contains("clicked")) {
-    eraseSelect.classList.remove("clicked");
-    editor.element.setAttribute("style", `cursor: default`);
-  }
-
-  if (editor.getMode() == "pencil") {
-    editor.setMode("");
-    pencilSelect.classList.remove("clicked");
-    editor.element.setAttribute("style", `cursor: default`);
-  } 
-  else {
-    editor.setMode("pencil");
-    pencilSelect.classList.add("clicked");
-    editor.g = editor.element.getElementsByTagName("g");
-    editor.text = editor.element.getElementsByTagName("text");
+    this.pencilSelect.classList.add('clicked');
     editor.element.setAttribute("style", `cursor: url(icons/pencil.svg), auto`);
+    this.setEventListener();
+    
   }
-});
+  setEventListener(){
+    this.clearButton.addEventListener('click', () => {
+      editor.element.innerHTML = ``;
+      graph.emptyGraph();
+      undoRedo.saveState();
+      this.clearButton.classList.add("clicked");
+      setTimeout(() => {this.clearButton.classList.remove("clicked");}, 50);
+    });
+    
+    this.undo.addEventListener('click', () => {
+      undoRedo.undo();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'z' && event.ctrlKey) {
+        undoRedo.undo();
+      }
+    });
+    this.redo.addEventListener('click', () => {
+      undoRedo.redo();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'y' && event.ctrlKey) {
+        undoRedo.redo();
+      }
+    });
+    this.eraseSelect.addEventListener('click', () => {
+      this.pencilSelect.classList.remove('clicked');
+      this.eraseSelect.classList.add('clicked');
+      editor.element.setAttribute("style", `cursor: url(icons/eraser.svg), auto`);
+      editor.onEvent('eraser');
+    });
 
-// eraser
-const eraseSelect = document.getElementById("eraser-select");
-eraseSelect.addEventListener("click", () => {
-  if (pencilSelect.classList.contains("clicked")) {
-    pencilSelect.classList.remove("clicked");
-    editor.element.setAttribute("style", `cursor: default`);
+    this.pencilSelect.addEventListener('click', () => {
+      this.pencilSelect.classList.add('clicked');
+      this.eraseSelect.classList.remove('clicked');
+      editor.element.setAttribute("style", `cursor: url(icons/pencil.svg), auto`);
+      editor.onEvent('pencil');
+    });
   }
+}
 
-  if (editor.getMode() == "eraser") {
-    editor.setMode("");
-    eraseSelect.classList.remove("clicked");
-    editor.element.setAttribute("style", `cursor: default`);
-  } 
-  else {
-    editor.setMode("eraser");
-
-    eraseSelect.classList.add("clicked");
-    editor.element.setAttribute("style", `cursor: url(icons/eraser.svg), auto`);
-  }
-});
+const menu = new Menu();

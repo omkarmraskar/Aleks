@@ -14,55 +14,67 @@ class Draw{
 
     this.x;
     this.y;
-
-    this.addEventListeners();
     
-    document.querySelectorAll('.icon').forEach((icon) => {
-      icon.addEventListener('click', (event)=>{
-        this.selectedIcon = event.target;
-        this.currentSymbol = new Shape(this.x, this.y, '', this.selectedIcon);
-        if(this.currentSymbol){
-          this.element.appendChild(this.currentSymbol.element);
-          this.shapes.push(this.currentSymbol);
-          
-        }
-        this.currentSymbol = null;
-        this.boardText.setAttribute("style", "display: none;");
-        this.iconPopup.classList.toggle('show');    
-      });
-    });
+    this.node1;
+    this.node2;
+    this.edge;
+
+    this.mousedown = null;
+    this.mousemove = null
+    this.mouseup = null;
+    this.onEvent();
+    // document.querySelectorAll('.icon').forEach((icon) => {
+    //   icon.addEventListener('click', (event)=>{
+    //     this.newNode(this.x, this.y, icon.innerHTML, true);
+    //     this.boardText.setAttribute("style", "display: none;");
+    //     this.iconPopup.classList.toggle('show');
+    //   });
+    // });
+    
   }
 
-  setMode(mode) {
-    this.mode = mode;
-    this.addEventListeners();
+  newNode(x, y, icon, visible){
+    const node = new Node(parseInt(x), parseInt(y), icon, visible);
+    // snapping.snapSymbol(node);
+    this.currentSymbol = graph.addNode(node);
+    const nodeHTML = this.currentSymbol.draw();
+    this.element.appendChild(nodeHTML);
+    this.currentSymbol = null;
+    undoRedo.saveState();
   }
 
-  addEventListeners() {
-    this.element.removeEventListener('mousedown', this.pencilEventListener);
-    this.element.removeEventListener('mousemove', this.pencilMouseMoveEventListener);
-    this.element.removeEventListener('mousedown', this.eraserEventListener);
-    this.element.removeEventListener('mousemove', this.eraserMouseMoveEventListener);
-    this.element.removeEventListener('mouseup', this.mouseUpEventListener);
-  
-    if (this.mode === 'pencil') {
-      this.element.addEventListener('mousedown', this.pencilEventListener = this.pencilEventListener.bind(this));
-      this.element.addEventListener('mousemove', this.pencilMouseMoveEventListener = this.pencilMouseMoveEventListener.bind(this));
-    } else if (this.mode === 'eraser') {
-      this.element.addEventListener('mousedown', this.eraserEventListener = this.eraserEventListener.bind(this));
-      this.element.addEventListener('mousemove', this.eraserMouseMoveEventListener = this.eraserMouseMoveEventListener.bind(this));
-    }
-  
-    this.element.addEventListener('mouseup', this.mouseUpEventListener = this.mouseUpEventListener.bind(this));
-  }
+  onEvent(button = 'pencil') {
+    // Remove event listeners from previous button, if there is one
+    this.element.removeEventListener('mousedown', this.mousedown);
+    this.element.removeEventListener('mousemove', this.mousemove);
+    this.element.removeEventListener('mouseup', this.mouseup);
+    
+    // Add event listeners for new button
+    this.mousedown = this[`${button}EventListener`].bind(this);
+    this.mousemove = this[`${button}MouseMoveEventListener`].bind(this);
+    this.mouseup = this[`${button}MouseUpEventListener`].bind(this);
 
-  getMode(){
-    return this.mode;
+    this.element.addEventListener('mousedown', this.mousedown);
+    this.element.addEventListener('mousemove', this.mousemove);
+    this.element.addEventListener('mouseup', this.mouseup);
+
   }
 
   pencilEventListener(event) {
     if (event.button === 0) {
-      this.startShape(event.offsetX, event.offsetY, 'pencil');
+      this.startEdge(event.offsetX, event.offsetY);
+    }
+  }
+  
+  pencilMouseMoveEventListener(event) {
+    if(this.node1){
+      this.updateEdge(event.offsetX, event.offsetY);
+    }
+  }
+  
+  pencilMouseUpEventListener(event) {
+    if(event.button === 0){
+      this.endEdge();
     }
   }
   
@@ -71,38 +83,54 @@ class Draw{
       this.eraseShapes(event.offsetX, event.offsetY);
     }
   }
-  
-  pencilMouseMoveEventListener(event) {
-    this.updateShape(event.offsetX, event.offsetY, 'pencil');
-  }
-  
+
   eraserMouseMoveEventListener(event) {
-    snapping.highlightLines(event.offsetX, event.offsetY);
+    utilities.highlightLines(event.offsetX, event.offsetY);
   }
   
-  mouseUpEventListener(event) {
-    this.endShape();
-    snapping.deleteShortLine(event);
+  eraserMouseUpEventListener(event){}
+
+  startEdge(x, y) {
+      this.node1 = utilities.isCloseLine(x, y);
+      this.node2 = utilities.isCloseLine(x, y);
+      this.edge = new Edge(this.node1, this.node2);
+      const line = this.edge.draw()
+      this.element.append(line);
   }
 
-  startShape(x, y, mode) {
-      this.currentShape = new Shape(x, y, mode);
-      this.element.appendChild(this.currentShape.element);
-  }
-
-  updateShape(x, y, mode) {
-      if (this.currentShape !== null && mode === 'pencil') {
-        this.currentShape.addPoint(x, y, mode);
+  updateEdge(x, y) {
+      if (this.node1!==null && this.node2 !== null) {
+        this.boardText.setAttribute("style", "display: none;");
+        this.node2 = utilities.isCloseLine(x, y);
+        this.edge = new Edge(this.node1, this.node2);
+        const line = this.edge.draw()
+        this.element.removeChild(this.element.lastElementChild);
+        this.element.append(line);
       }
   }
 
-  endShape() {
-      if (this.currentShape !== null) {
-        this.shapes.push(this.currentShape);
-        if(this.getLength(this.currentShape.element) > 20){
+  endEdge() {
+      
+      this.edge = new Edge(this.node1, this.node2);
+      this.element.removeChild(this.element.lastChild);
+      if(!utilities.deleteShortLine(this.node1, this.node2)){
+        if(!graph.isEdgePresent(this.node1, this.node2)){
+          graph.addEdge(this.edge);
+          if(!graph.isNodePresent(this.node1)){
+            graph.addNode(this.node1);
+          }
+          if(!graph.isNodePresent(this.node2)){
+            graph.addNode(this.node2);
+          }
+          const line = this.edge.draw()
+          this.element.append(line);          
         }
-        this.currentShape = null;
+        undoRedo.saveState();
       }
+
+      this.node1 = null;
+      this.node2 = null;
+      this.edge = null;
   }
   getLength(element){
     if(element.tagName === 'line'){
@@ -116,28 +144,46 @@ class Draw{
 
   openIconPopup(x, y) {
     // Set the position of the icon popup
-    this.iconPopup.style.left = x + 102 + "px";
-    this.iconPopup.style.top = y + 42 + "px";
+    this.iconPopup.style.left = x + 115 + "px";
+    this.iconPopup.style.top = y + 52 + "px";
   }
 
   eraseShapes(x, y) {
-    const shapeElementsToRemove = [];
-    for (const shape of this.shapes) {
-      const element = shape.element;
-      
-      let distance = snapping.getPerpendicularDistance(x, y, element);
-      if (distance <= 20) {
-        shapeElementsToRemove.push(shape.element);
+    const edgeToRemove = [];
+    const nodeToRemove = [];
+
+    const curGraph = graph.getRecall();
+    const edges = curGraph.edges;
+    const nodes = curGraph.nodes;
+    
+
+    for(let i=0; i<edges.length; i++){
+      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(edges[i].source.x), parseInt(edges[i].source.y), parseInt(edges[i].target.x), parseInt(edges[i].target.y));
+      if(distance <= 15){
+        edgeToRemove.push(edges[i].edgeID);
       }
     }
-  
-    for (const element of shapeElementsToRemove) {
-      element.remove();
-      const index = this.shapes.findIndex(shape => shape.element === element);
-      if (index !== -1) {
-        this.shapes.splice(index, 1);
+
+    for(let i=0; i<nodes.length; i++){
+      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(nodes[i].x), parseInt(nodes[i].y));
+      if(distance <= 15){
+        nodeToRemove.push(nodes[i].nodeID);
       }
     }
+
+    for(let i=0; i<edgeToRemove.length; i++){
+      const edgeID = edgeToRemove[i]
+      graph.removeEdge(edgeID);
+    }
+
+    for(let i=0; i<nodeToRemove.length; i++){
+      const nodeID = nodeToRemove[i];
+      graph.removeNode(nodeID);
+    }
+    this.element.innerHTML = "";
+    graph.draw();
+
+    undoRedo.saveState();
   } 
 }
 

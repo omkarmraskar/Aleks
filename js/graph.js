@@ -1,9 +1,9 @@
 class Graph {
-
 	constructor() {
 	  this.__nodes = [];
 	  this.__edges = [];
-	  
+	  this.edge_id = 0;
+	  this.node_id = 0;
 	}
 
 	// function to return if a graph is empty or not
@@ -12,11 +12,17 @@ class Graph {
 	}
 
 	// function to add a new node in the graph
-	addNode() {
-	  const newNode = {
-		nodeID: this.__nodes.length + 1,
+	addNode(node) {
+	
+	const newNode = {
+		nodeID: ++this.node_id,
+		x: node.x,
+		y: node.y,
+		visible : node.visible,
+		icon : node.icon
 	  };
-	  this.__nodes.append(newNode);
+	  this.__nodes.push(newNode);
+	  return node;
 	}
 
 	// function to return if a particular node is present the graph or not
@@ -44,19 +50,23 @@ class Graph {
 
 	// function to remove a node
 	removeNode(nodeID) {
-	  for (const node in this.__nodes) {
-		if (node.nodeID == nodeID) {
-		  this.__nodes = this.__nodes.filter((node) => node.nodeID != nodeID);
+		for (let i = 0; i < this.__nodes.length; i++) {
+		  if (this.__nodes[i].nodeID === nodeID) {
+			this.__nodes.splice(i, 1);
+			break;
+		  }
 		}
 	  }
-	}
 
 	// function to add an edge in the graph
-	addEdge() {
-	  const newEdge = {
-		edgeID: this.__edges.length + 1,
+	addEdge(edge) {
+	const newEdge = {
+		edgeID: ++this.edge_id,
+
+		source: edge.__nodes[0],
+		target: edge.__nodes[1]
 	  };
-	  this.__edges.append(newEdge);
+	  this.__edges.push(newEdge);
 	}
 
 	// funtion to return if a particular edge is present the graph or not
@@ -84,12 +94,13 @@ class Graph {
 
 	// function to remove an edge
 	removeEdge(edgeID) {
-	  for (const edge in this.__edges) {
-		if (edge.edgeID == edgeID) {
-		  this.__edges = this.__edges.filter((edge) => edge.edgeID != edgeID);
+		for (let i = 0; i < this.__edges.length; i++) {
+		  if (this.__edges[i].edgeID === edgeID) {
+			this.__edges.splice(i, 1);
+			break;
+		  }
 		}
 	  }
-	}
 
 	// function to return true if there is an edge in the graph connecting the two nodes passed as parameters, false otherwise.
 	hasEdgeBetweenNodes(node1, node2) {
@@ -112,12 +123,54 @@ class Graph {
 	  };
 	  return recall;
 	}
-
-	draw(){
-		const board = document.getElementById('board');
+	isNodePresent(node){
+		for(let i=0; i<this.__nodes.length; i++){
+			if((parseInt(node.x) === parseInt(this.__nodes[i].x)) && (parseInt(node.y) === parseInt(this.__nodes[i].y))){
+				return true;
+			}
+		}
+		return false;
+	}
+	isEdgePresent(node1, node2){
+		for(let i=0; i< this.__edges.length; i++){
+			if((node1.x === this.__edges[i].source.x) && (node1.y === this.__edges[i].source.y) &&
+			(node2.x === this.__edges[i].target.x) && (node2.y === this.__edges[i].target.y)){
+				return true;
+			}
+		}
+		return false
+	}
+	
+	emptyGraph() {
+		this.__edges = [];
+		this.__nodes = [];	
+		editor.element.innerHTML = '';
 		
 	}
-  }
+	resetGraph(graph){
+		if(graph){
+			this.__edges = graph.edges;
+			this.__nodes = graph.nodes;
+			this.draw();
+		}
+	}
+	draw(){
+		for(const edge of this.__edges){
+			const edge1 = new Edge(edge.source, edge.target);
+			const line = edge1.draw();
+			editor.element.append(line)
+
+		}
+		for(const node of this.__nodes){
+			const node1 = new Node(node.x, node.y, node.icon, node.visible);
+			if(node.visible){
+				const g = node1.draw();
+				editor.element.append(g);				
+			}
+		}
+		
+	}
+}
 
 class Edge{
 
@@ -146,22 +199,34 @@ class Edge{
 		this.__nodes[1] = node;
 	  }
 	}
+
+	updateNode(x, y){
+		this.__nodes[1].x = x;
+		this.__nodes[1].y = y;
+	}
+
 	draw(){
 		const x1 = this.__nodes[0].x;
 		const y1 = this.__nodes[0].y;
 		const x2 = this.__nodes[1].x;
 		const y2 = this.__nodes[1].y;
-		const line = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">`
+		const line = document.createElementNS("http://www.w3.org/2000/svg", 'line')
+		line.setAttribute('x1', x1);
+		line.setAttribute('x2', x2);
+		line.setAttribute('y1', y1);
+		line.setAttribute('y2', y2);
 		return line;
 	}
   }
 
 class Node{
 
-	constructor(x, y) {
+	constructor(x = 0, y = 0, icon = 'C', visible = false) {
 	  this.__edges = [[], []]; //this.__edges[0] is the edges for which this is edge.__nodes[0], and this.__edges[1] is the edge for which this is edge.__nodes[1].
 	  this.x = x;
 	  this.y = y;
+	  this.icon = icon;
+	  this.visible = visible;
 	}
 
 	// function to get incoming edges of a node
@@ -264,12 +329,16 @@ class Node{
 	}
 	draw(){
 		const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-		g.setAttribute('transform', `x="${this.x}" y="${this.y}"`);
-
+		g.setAttribute('transform', `translate(${this.x},${this.y})`);
+		if (this.visible === false){
+		  g.style.visibility = 'hidden';
+		}
 		const txt = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+    	txt.innerHTML = this.icon;
 		txt.setAttribute("style", 'user-select : none;');
+		txt.setAttribute("text-anchor", "middle"); // center horizontally
+		txt.setAttribute("dominant-baseline", "middle");		
 		g.append(txt);
-
 		return g;
 	}
 	setX(x){
@@ -285,3 +354,5 @@ class Node{
 		this.visible != this.visible;
 	}
   }
+
+  const graph = new Graph();
