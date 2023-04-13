@@ -35,7 +35,7 @@ class Draw{
 
   newNode(x, y, icon, visible){
     const node = new Node(parseInt(x), parseInt(y), icon, visible);
-    snapping.snapSymbol(node);
+    // snapping.snapSymbol(node);
     this.currentSymbol = graph.addNode(node);
     const nodeHTML = this.currentSymbol.draw();
     this.element.appendChild(nodeHTML);
@@ -73,7 +73,9 @@ class Draw{
   }
   
   pencilMouseUpEventListener(event) {
-    this.endEdge();
+    if(event.button === 0){
+      this.endEdge();
+    }
   }
   
   eraserEventListener(event) {
@@ -156,14 +158,14 @@ class Draw{
     
 
     for(let i=0; i<edges.length; i++){
-      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), edges[i].source, edges[i].target);
+      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(edges[i].source.x), parseInt(edges[i].source.y), parseInt(edges[i].target.x), parseInt(edges[i].target.y));
       if(distance <= 15){
         edgeToRemove.push(edges[i].edgeID);
       }
     }
 
     for(let i=0; i<nodes.length; i++){
-      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), nodes[i]);
+      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(nodes[i].x), parseInt(nodes[i].y));
       if(distance <= 15){
         nodeToRemove.push(nodes[i].nodeID);
       }

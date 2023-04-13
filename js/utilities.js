@@ -36,13 +36,13 @@ class Utilities{
         return false;        
     }
 
-    getPerpendicularDistance(x, y, node1, node2){
+    getPerpendicularDistance(x, y, x1, y1, x2, y2){
         let distance;
-        if(node1 && node2){
-            const x1 = parseInt(node1.x);
-            const y1 = parseInt(node1.y);
-            const x2 = parseInt(node2.x);
-            const y2 = parseInt(node2.y);
+        if((x1 && y1) && (x2 && y2)){
+            // const x1 = parseInt(node1.x);
+            // const y1 = parseInt(node1.y);
+            // const x2 = parseInt(node2.x);
+            // const y2 = parseInt(node2.y);
 
             const dx = x2 - x1;
             const dy = y2 - y1;
@@ -67,9 +67,9 @@ class Utilities{
             }  
                       
         }
-        else if (node1) {
-            const x1 = node1.x;
-            const y1 = node1.y;
+        else if (x1 && y1) {
+            // const x1 = node1.x;
+            // const y1 = node1.y;
             const dx = Math.abs(x1 - x);
             const dy = Math.abs(y1 - y);
             distance = Math.sqrt(dx * dx + dy * dy);            
@@ -85,7 +85,7 @@ class Utilities{
           const y1 = parseInt(element.getAttribute("y1"));
           const x2 = parseInt(element.getAttribute("x2"));
           const y2 = parseInt(element.getAttribute("y2"));     
-          distance = this.getPerpendicularDistance(x, y, new Node(x1, y1), new Node(x2, y2));     
+          distance = this.getPerpendicularDistance(x, y, x1, y1, x2, y2);     
         }
         else if(element.tagName === 'g'){
             const htmlTag = element.getAttribute('transform');
@@ -100,7 +100,7 @@ class Utilities{
               x1 = parseInt(match[1]);
               y1 = parseInt(match[2]);
             }
-            distance = this.getPerpendicularDistance(x, y, new Node(x1, y1));
+            distance = this.getPerpendicularDistance(x, y, x1, y1);
         }
         // let distance = this.getPerpendicularDistance(x, y, x1, y1, x2, y2);
         if (distance <= 15) {

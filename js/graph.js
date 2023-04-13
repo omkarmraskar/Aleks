@@ -336,6 +336,8 @@ class Node{
 		const txt = document.createElementNS("http://www.w3.org/2000/svg", 'text');
     	txt.innerHTML = this.icon;
 		txt.setAttribute("style", 'user-select : none;');
+		txt.setAttribute("text-anchor", "middle"); // center horizontally
+		txt.setAttribute("dominant-baseline", "middle");		
 		g.append(txt);
 		return g;
 	}
