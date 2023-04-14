@@ -16,19 +16,23 @@ class UndoRedo {
   
     undo() {
       if (this.canUndo()) {
-        const recall = this.undoStack.pop();
+        const recall = JSON.parse(JSON.stringify(this.undoStack.pop()));
         this.redoStack.push(recall);
         this.graph.emptyGraph();
-        this.graph.resetGraph(this.undoStack[this.undoStack.length - 1]);
+        if(this.undoStack[this.undoStack.length - 1]){
+          this.graph.resetGraph(JSON.parse(JSON.stringify(this.undoStack[this.undoStack.length - 1])));
+        }
       }
     }
   
     redo() {
       if (this.canRedo()) {
-        const recall = this.redoStack.pop();
+        const recall = JSON.parse(JSON.stringify(this.redoStack.pop()));
         this.undoStack.push(recall);
         this.graph.emptyGraph();
-        this.graph.resetGraph(this.undoStack[this.undoStack.length - 1]);
+        if(this.undoStack[this.undoStack.length - 1]){
+          this.graph.resetGraph(JSON.parse(JSON.stringify(this.undoStack[this.undoStack.length - 1])));
+        }
       }
     }
   
