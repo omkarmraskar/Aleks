@@ -35,7 +35,7 @@ class Draw{
 
   newNode(x, y, icon, visible){
     const node = new Node(parseInt(x), parseInt(y), icon, visible);
-    // snapping.snapSymbol(node);
+    snapping.snapSymbol(node);
     this.currentSymbol = graph.addNode(node);
     const nodeHTML = this.currentSymbol.draw();
     this.element.appendChild(nodeHTML);
