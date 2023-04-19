@@ -23,6 +23,7 @@ class Draw{
     this.mousemove = null
     this.mouseup = null;
     this.onEvent();
+    this.selectIcon();
     // document.querySelectorAll('.icon').forEach((icon) => {
     //   icon.addEventListener('click', (event)=>{
     //     this.newNode(this.x, this.y, icon.innerHTML, true);
@@ -34,13 +35,15 @@ class Draw{
   }
 
   newNode(x, y, icon, visible){
-    const node = new Node(parseInt(x), parseInt(y), icon, visible);
+    const node = new Node(x, y, icon, visible);
     snapping.snapSymbol(node);
-    this.currentSymbol = graph.addNode(node);
-    const nodeHTML = this.currentSymbol.draw();
-    this.element.appendChild(nodeHTML);
+    if(!graph.isNodePresent(node)){
+      this.currentSymbol = graph.addNode(node);
+      const nodeHTML = this.currentSymbol.draw();
+      this.element.appendChild(nodeHTML);
+      undoRedo.saveState();      
+    }
     this.currentSymbol = null;
-    undoRedo.saveState();
   }
 
   onEvent(button = 'pencil') {
@@ -62,13 +65,13 @@ class Draw{
 
   pencilEventListener(event) {
     if (event.button === 0) {
-      this.startEdge(event.offsetX, event.offsetY);
+      this.startEdge(Number(event.offsetX), Number(event.offsetY));
     }
   }
   
   pencilMouseMoveEventListener(event) {
     if(this.node1){
-      this.updateEdge(event.offsetX, event.offsetY);
+      this.updateEdge(Number(event.offsetX), Number(event.offsetY));
     }
   }
   
@@ -80,12 +83,12 @@ class Draw{
   
   eraserEventListener(event) {
     if (event.button === 0) {
-      this.eraseShapes(event.offsetX, event.offsetY);
+      this.eraseShapes(Number(event.offsetX), Number(event.offsetY));
     }
   }
 
   eraserMouseMoveEventListener(event) {
-    utilities.highlightLines(event.offsetX, event.offsetY);
+    utilities.highlightLines(Number(event.offsetX), Number(event.offsetY));
   }
   
   eraserMouseUpEventListener(event){}
@@ -158,16 +161,27 @@ class Draw{
     
 
     for(let i=0; i<edges.length; i++){
-      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(edges[i].source.x), parseInt(edges[i].source.y), parseInt(edges[i].target.x), parseInt(edges[i].target.y));
+      const distance = utilities.getPerpendicularDistance(x, y, edges[i].source.x, edges[i].source.y, edges[i].target.x, edges[i].target.y);
       if(distance <= 15){
         edgeToRemove.push(edges[i].edgeID);
+        const node1ID = graph.getNodeId(edges[i].source);
+        const node2ID = graph.getNodeId(edges[i].target);
+        
+        if(graph.getEdgesFromNode(edges[i].source) <= 1){
+          nodeToRemove.push(node1ID);
+        }
+        if(graph.getEdgesFromNode(edges[i].target) <= 1){
+          nodeToRemove.push(node2ID);
+        }
+        break;
       }
     }
 
     for(let i=0; i<nodes.length; i++){
-      const distance = utilities.getPerpendicularDistance(parseInt(x), parseInt(y), parseInt(nodes[i].x), parseInt(nodes[i].y));
+      const distance = utilities.getPerpendicularDistance(x, y, nodes[i].x, nodes[i].y);
       if(distance <= 15){
         nodeToRemove.push(nodes[i].nodeID);
+        break;
       }
     }
 
@@ -184,7 +198,17 @@ class Draw{
     graph.draw();
 
     undoRedo.saveState();
-  } 
+  }
+  selectIcon() {
+    document.querySelectorAll(".icon").forEach((icon) => {
+      icon.addEventListener("click", (event) => {
+        editor.selectedIcon = event.target;
+        editor.newNode(editor.x, editor.y, icon.innerHTML, true);
+        editor.boardText.setAttribute("style", "display: none;");
+        editor.iconPopup.classList.toggle("show");
+      });
+    });
+  }
 }
 
 const editor = new Draw('board');

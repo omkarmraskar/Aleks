@@ -39,11 +39,6 @@ class Utilities{
     getPerpendicularDistance(x, y, x1, y1, x2, y2){
         let distance;
         if((x1 && y1) && (x2 && y2)){
-            // const x1 = parseInt(node1.x);
-            // const y1 = parseInt(node1.y);
-            // const x2 = parseInt(node2.x);
-            // const y2 = parseInt(node2.y);
-
             const dx = x2 - x1;
             const dy = y2 - y1;
             const length = Math.sqrt(dx * dx + dy * dy);
@@ -81,10 +76,10 @@ class Utilities{
       for (const element of editor.element.children) {
         let distance;
         if(element.tagName === 'line'){
-          const x1 = parseInt(element.getAttribute("x1"));
-          const y1 = parseInt(element.getAttribute("y1"));
-          const x2 = parseInt(element.getAttribute("x2"));
-          const y2 = parseInt(element.getAttribute("y2"));     
+          const x1 = Number(element.getAttribute("x1"));
+          const y1 = Number(element.getAttribute("y1"));
+          const x2 = Number(element.getAttribute("x2"));
+          const y2 = Number(element.getAttribute("y2"));     
           distance = this.getPerpendicularDistance(x, y, x1, y1, x2, y2);     
         }
         else if(element.tagName === 'g'){
@@ -97,8 +92,8 @@ class Utilities{
             // Storing the values in variables x and y
             let x1, y1;
             if (match) {
-              x1 = parseInt(match[1]);
-              y1 = parseInt(match[2]);
+              x1 = Number(match[1]);
+              y1 = Number(match[2]);
             }
             distance = this.getPerpendicularDistance(x, y, x1, y1);
         }
@@ -110,16 +105,5 @@ class Utilities{
         }
       }
     }
-    selectIcon() {
-      document.querySelectorAll(".icon").forEach((icon) => {
-        icon.addEventListener("click", (event) => {
-          editor.selectedIcon = event.target;
-          editor.newNode(editor.x, editor.y, icon.innerHTML, true);
-          editor.boardText.setAttribute("style", "display: none;");
-          editor.iconPopup.classList.toggle("show");
-        });
-      });
-    }
 }
 const utilities = new Utilities();
-utilities.selectIcon();

@@ -60,13 +60,13 @@ class Static{
         let lines = obj.edges;
         let symbols = obj.nodes;
         for (const line of lines) {
-          editor.startEdge(parseInt(line.x1), parseInt(line.y1));
-          editor.updateEdge(parseInt(line.x2), parseInt(line.y2));
+          editor.startEdge(Number(line.x1), Number(line.y1));
+          editor.updateEdge(Number(line.x2), Number(line.y2));
           editor.endEdge();
           undoRedo.undoStack.pop();
         }
         for(const node of symbols){
-          editor.newNode(node.x, node.y, node.icon, node.visible);
+          editor.newNode(Number(node.x), Number(node.y), node.icon, node.visible);
           undoRedo.undoStack.pop();
         }
         if(lines || symbols){

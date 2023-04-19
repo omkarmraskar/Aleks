@@ -35,6 +35,14 @@ class Graph {
 	  return null;
 	}
 
+	getNodeId(newNode){
+		for (let i=0; i<this.__nodes.length; i++) {
+			if ((newNode.x === this.__nodes[i].x) && (newNode.y === this.__nodes[i].y)) {
+				return this.__nodes[i].nodeID;
+			}
+		}
+		return null;
+	}
 	// funtion to return all the nodes of the graph
 	getNodes() {
 	  return this.__nodes;
@@ -69,6 +77,21 @@ class Graph {
 	  this.__edges.push(newEdge);
 	}
 
+	getEdgesFromNode(node){
+		let count = 0;
+		for(let i=0; i<this.__edges.length; i++){
+			const source = this.__edges[i].source;
+			const target = this.__edges[i].target;
+			if((source.x === node.x) && (source.y === node.y)){
+				count++;
+			}
+			else if((target.x === node.x) && (target.y === node.y)){
+				count++;
+			}
+		}
+		
+		return count;
+	}
 	// funtion to return if a particular edge is present the graph or not
 	getEdgeById(edgeID) {
 	  for (const edge in this.__edges) {
@@ -125,7 +148,7 @@ class Graph {
 	}
 	isNodePresent(node){
 		for(let i=0; i<this.__nodes.length; i++){
-			if((parseInt(node.x) === parseInt(this.__nodes[i].x)) && (parseInt(node.y) === parseInt(this.__nodes[i].y))){
+			if((node.x === this.__nodes[i].x) && (node.y === this.__nodes[i].y)){
 				return true;
 			}
 		}

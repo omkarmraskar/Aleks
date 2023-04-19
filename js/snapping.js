@@ -37,8 +37,8 @@ class Snapping {
           y = candidate[1];
         }        
       }
-      newNode.x = x;
-      newNode.y = y;
+      newNode.x = Number(x);
+      newNode.y = Number(y);
     }
   }
   const snapping = new Snapping();
