@@ -54,7 +54,7 @@ class Draw {
   // Function to handle pencil events
   pencilEventListener(event) {
     if (event.button === 0) {
-      this.startEdge(event.offsetX, event.offsetY);
+      this.startEdge(Number(event.offsetX), Number(event.offsetY));
     }
   }
   // Function to handle pencil mouse move events
@@ -73,13 +73,13 @@ class Draw {
   // Function to handle eraser events
   eraserEventListener(event) {
     if (event.button === 0) {
-      this.eraseShapes(event.offsetX, event.offsetY);
+      this.eraseShapes(Number(event.offsetX), Number(event.offsetY));
     }
   }
 
   // Function to handle eraser mouse move events
   eraserMouseMoveEventListener(event) {
-    utilities.highlightLines(event.offsetX, event.offsetY);
+    utilities.highlightLines(Number(event.offsetX), Number(event.offsetY));
   }
   // startEdge() creates a new edge between two nodes
   startEdge(x, y) {
@@ -199,6 +199,7 @@ class Draw {
       );
       if (distance <= 15) {
         nodeToRemove.push(nodes[i].nodeID);
+        break;
         break;
       }
     }
