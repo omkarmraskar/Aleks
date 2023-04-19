@@ -81,6 +81,8 @@ class Draw {
   eraserMouseMoveEventListener(event) {
     utilities.highlightLines(Number(event.offsetX), Number(event.offsetY));
   }
+
+  eraserMouseUpEventListener(){}
   // startEdge() creates a new edge between two nodes
   startEdge(x, y) {
     this.node1 = utilities.isCloseLine(x, y);
