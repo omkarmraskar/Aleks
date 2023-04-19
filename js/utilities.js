@@ -1,4 +1,5 @@
 class Utilities {
+  // Checks if the given coordinates are close to a node in the graph
   isCloseLine(x, y) {
     let node = new Node(x, y);
 
@@ -15,34 +16,22 @@ class Utilities {
     }
     return node;
   }
-
-  deleteShortLine(node1, node2) {
-    if (node1 && node2) {
-      const x1 = node1.x;
-      const y1 = node1.y;
-      const x2 = node2.x;
-      const y2 = node2.y;
-      const distance = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-      if (distance <= 20) {
-        editor.iconPopup.classList.toggle("show");
-        editor.x = x1;
-        editor.y = y1;
-        editor.openIconPopup(x1, y1);
-        editor.selectIcon();
-        return true;
-      }
+  // Deletes a line if it is too short
+  deleteShortLine(x1, y1, x2, y2) {
+    const distance = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    if (distance <= 20) {
+      editor.iconPopup.classList.toggle("show");
+      editor.x = x1;
+      editor.y = y1;
+      editor.openIconPopup(x1, y1);
+      return true;
     }
     return false;
   }
-
+  // Calculates the perpendicular distance between two points
   getPerpendicularDistance(x, y, x1, y1, x2, y2) {
     let distance;
     if (x1 && y1 && x2 && y2) {
-      // const x1 = parseInt(node1.x);
-      // const y1 = parseInt(node1.y);
-      // const x2 = parseInt(node2.x);
-      // const y2 = parseInt(node2.y);
-
       const dx = x2 - x1;
       const dy = y2 - y1;
       const length = Math.sqrt(dx * dx + dy * dy);
@@ -73,7 +62,7 @@ class Utilities {
     }
     return distance;
   }
-
+  // Highlights lines that are close to the given coordinates
   highlightLines(x, y) {
     for (const element of editor.element.children) {
       let distance;

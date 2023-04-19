@@ -21,25 +21,21 @@ class Draw {
     this.mousemove = null;
     this.mouseup = null;
     this.onEvent();
-    // document.querySelectorAll('.icon').forEach((icon) => {
-    //   icon.addEventListener('click', (event)=>{
-    //     this.newNode(this.x, this.y, icon.innerHTML, true);
-    //     this.boardText.setAttribute("style", "display: none;");
-    //     this.iconPopup.classList.toggle('show');
-    //   });
-    // });
+    this.selectIcon();
   }
-
+  // newNode() creates a new node and adds it to the graph
   newNode(x, y, icon, visible) {
-    const node = new Node(parseInt(x), parseInt(y), icon, visible);
-    // snapping.snapSymbol(node);
-    this.currentSymbol = graph.addNode(node);
-    const nodeHTML = this.currentSymbol.draw();
-    this.element.appendChild(nodeHTML);
+    const node = new Node(x, y, icon, visible);
+    snapping.snapSymbol(node);
+    if (!graph.isNodePresent(node)) {
+      this.currentSymbol = graph.addNode(node);
+      const nodeHTML = this.currentSymbol.draw();
+      this.element.appendChild(nodeHTML);
+      undoRedo.saveState();
+    }
     this.currentSymbol = null;
-    undoRedo.saveState();
   }
-
+  // onEvent() sets up event listeners for the given buttons
   onEvent(button = "pencil") {
     // Remove event listeners from previous button, if there is one
     this.element.removeEventListener("mousedown", this.mousedown);
@@ -55,37 +51,37 @@ class Draw {
     this.element.addEventListener("mousemove", this.mousemove);
     this.element.addEventListener("mouseup", this.mouseup);
   }
-
+  // Function to handle pencil events
   pencilEventListener(event) {
     if (event.button === 0) {
       this.startEdge(event.offsetX, event.offsetY);
     }
   }
-
+  // Function to handle pencil mouse move events
   pencilMouseMoveEventListener(event) {
     if (this.node1) {
       this.updateEdge(event.offsetX, event.offsetY);
     }
   }
 
+  // Function to handle pencil mouse up events
   pencilMouseUpEventListener(event) {
     if (event.button === 0) {
       this.endEdge();
     }
   }
-
+  // Function to handle eraser events
   eraserEventListener(event) {
     if (event.button === 0) {
       this.eraseShapes(event.offsetX, event.offsetY);
     }
   }
 
+  // Function to handle eraser mouse move events
   eraserMouseMoveEventListener(event) {
     utilities.highlightLines(event.offsetX, event.offsetY);
   }
-
-  eraserMouseUpEventListener(event) {}
-
+  // startEdge() creates a new edge between two nodes
   startEdge(x, y) {
     this.node1 = utilities.isCloseLine(x, y);
     this.node2 = utilities.isCloseLine(x, y);
@@ -93,7 +89,7 @@ class Draw {
     const line = this.edge.draw();
     this.element.append(line);
   }
-
+  // updateEdge() updates an existing edge between two nodes
   updateEdge(x, y) {
     if (this.node1 !== null && this.node2 !== null) {
       this.boardText.setAttribute("style", "display: none;");
@@ -104,11 +100,18 @@ class Draw {
       this.element.append(line);
     }
   }
-
+  // endEdge() creates a new edge between two nodes and adds it to the graph
   endEdge() {
     this.edge = new Edge(this.node1, this.node2);
     this.element.removeChild(this.element.lastChild);
-    if (!utilities.deleteShortLine(this.node1, this.node2)) {
+    if (
+      !utilities.deleteShortLine(
+        this.node1.x,
+        this.node1.y,
+        this.node2.x,
+        this.node2.y
+      )
+    ) {
       if (!graph.isEdgePresent(this.node1, this.node2)) {
         graph.addEdge(this.edge);
         if (!graph.isNodePresent(this.node1)) {
@@ -127,6 +130,7 @@ class Draw {
     this.node2 = null;
     this.edge = null;
   }
+  // getLength() calculates the length of an element
   getLength(element) {
     if (element.tagName === "line") {
       const x1 = Number(element.getAttribute("x1"));
@@ -136,13 +140,13 @@ class Draw {
       return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
     }
   }
-
+  // openIconPopup() sets the position of the icon popup
   openIconPopup(x, y) {
     // Set the position of the icon popup
     this.iconPopup.style.left = x + 115 + "px";
     this.iconPopup.style.top = y + 52 + "px";
   }
-
+  // selectIcon() adds an event listener to each icon and selects the clicked icon
   selectIcon() {
     document.querySelectorAll(".icon").forEach((icon) => {
       icon.addEventListener("click", (event) => {
@@ -153,7 +157,7 @@ class Draw {
       });
     });
   }
-
+  // Function to erase shapes from the graph based on coordinates
   eraseShapes(x, y) {
     const edgeToRemove = [];
     const nodeToRemove = [];
@@ -164,27 +168,38 @@ class Draw {
 
     for (let i = 0; i < edges.length; i++) {
       const distance = utilities.getPerpendicularDistance(
-        parseInt(x),
-        parseInt(y),
-        parseInt(edges[i].source.x),
-        parseInt(edges[i].source.y),
-        parseInt(edges[i].target.x),
-        parseInt(edges[i].target.y)
+        x,
+        y,
+        edges[i].source.x,
+        edges[i].source.y,
+        edges[i].target.x,
+        edges[i].target.y
       );
       if (distance <= 15) {
         edgeToRemove.push(edges[i].edgeID);
+        const node1ID = graph.getNodeId(edges[i].source);
+        const node2ID = graph.getNodeId(edges[i].target);
+
+        if (graph.getEdgesFromNode(edges[i].source) <= 1) {
+          nodeToRemove.push(node1ID);
+        }
+        if (graph.getEdgesFromNode(edges[i].target) <= 1) {
+          nodeToRemove.push(node2ID);
+        }
+        break;
       }
     }
 
     for (let i = 0; i < nodes.length; i++) {
       const distance = utilities.getPerpendicularDistance(
-        parseInt(x),
-        parseInt(y),
-        parseInt(nodes[i].x),
-        parseInt(nodes[i].y)
+        x,
+        y,
+        nodes[i].x,
+        nodes[i].y
       );
       if (distance <= 15) {
         nodeToRemove.push(nodes[i].nodeID);
+        break;
       }
     }
 

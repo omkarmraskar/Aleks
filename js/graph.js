@@ -33,6 +33,15 @@ class Graph {
     }
     return null;
   }
+  // Function to get the node ID of a given node object
+  getNodeId(newNode) {
+    for (let i = 0; i < this.__nodes.length; i++) {
+      if (newNode.x === this.__nodes[i].x && newNode.y === this.__nodes[i].y) {
+        return this.__nodes[i].nodeID;
+      }
+    }
+    return null;
+  }
 
   // funtion to return all the nodes of the graph
   getNodes() {
@@ -66,6 +75,21 @@ class Graph {
       target: edge.__nodes[1],
     };
     this.__edges.push(newEdge);
+  }
+  // Function to get the number of edges from a given node
+  getEdgesFromNode(node) {
+    let count = 0;
+    for (let i = 0; i < this.__edges.length; i++) {
+      const source = this.__edges[i].source;
+      const target = this.__edges[i].target;
+      if (source.x === node.x && source.y === node.y) {
+        count++;
+      } else if (target.x === node.x && target.y === node.y) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   // funtion to return if a particular edge is present the graph or not
@@ -121,7 +145,8 @@ class Graph {
       nodes: this.__nodes,
     };
     return recall;
-  }
+  } 
+  // Checks if a node is present in the graph
   isNodePresent(node) {
     for (let i = 0; i < this.__nodes.length; i++) {
       if (
@@ -133,6 +158,7 @@ class Graph {
     }
     return false;
   }
+  // Checks if an edge is present in the graph
   isEdgePresent(node1, node2) {
     for (let i = 0; i < this.__edges.length; i++) {
       if (
@@ -146,19 +172,21 @@ class Graph {
     }
     return false;
   }
-
+  // emptyGraph() clears the graph of all edges and nodes
   emptyGraph() {
     this.__edges = [];
     this.__nodes = [];
     editor.element.innerHTML = "";
-  }
+  } 
+  // resetGraph() resets the graph to a given graph object
   resetGraph(graph) {
     if (graph) {
       this.__edges = graph.edges;
       this.__nodes = graph.nodes;
       this.draw();
     }
-  }
+  } 
+  // draw() draws the graph with the given edges and nodes
   draw() {
     for (const edge of this.__edges) {
       const edge1 = new Edge(edge.source, edge.target);
@@ -201,12 +229,12 @@ class Edge {
       this.__nodes[1] = node;
     }
   }
-
+// updateNode() updates the x and y coordinates of a node
   updateNode(x, y) {
     this.__nodes[1].x = x;
     this.__nodes[1].y = y;
   }
-
+// draw() creates an SVG line element with the given coordinates
   draw() {
     const x1 = this.__nodes[0].x;
     const y1 = this.__nodes[0].y;
@@ -328,29 +356,37 @@ class Node {
     }
     return null;
   }
+  // Function to draw an icon on the SVG canvas based on the given coordinates and visibility status
   draw() {
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("transform", `translate(${this.x},${this.y})`);
-    if (this.visible === false) {
+    if (!this.visible) {
       g.style.visibility = "hidden";
     }
     const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
     txt.innerHTML = this.icon;
     txt.setAttribute("style", "user-select : none;");
-    txt.setAttribute("text-anchor", "middle"); // center horizontally
+    txt.setAttribute("text-anchor", "middle");
     txt.setAttribute("dominant-baseline", "middle");
     g.append(txt);
     return g;
   }
+  // Set the x coordinate of the node
   setX(x) {
     this.x = x;
   }
+
+  // Set the y coordinate of the node
   setY(y) {
     this.y = y;
   }
+
+  // Set the icon of the node
   setNodeIcon(icon) {
     this.icon = icon;
   }
+
+  // Toggle the visibility of the node
   toggleVisible() {
     this.visible != this.visible;
   }

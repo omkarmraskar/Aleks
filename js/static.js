@@ -8,7 +8,7 @@ class Static {
     parseButton.addEventListener("click", this.parseFile.bind(this));
     eraseDynamic.addEventListener("click", this.loadStaticJson.bind(this));
   }
-
+  // Function to parse a file and load the content as JSON
   parseFile() {
     const fileInput = document.getElementById("jsonFileInput");
 
@@ -25,21 +25,21 @@ class Static {
       reader.readAsText(file);
     }
   }
-
-  loadDynamicJson(obj) {
+  // loadDynamicJson() loads data from a given parameter and creates nodes and edges
+  loadDynamicJson(data) {
     editor.element.innerHTML = ``;
     graph.emptyGraph();
-    if (obj.edges) {
-      var lines = obj.edges;
+    if (data.edges) {
+      var lines = data.edges;
       for (const line of lines) {
-        editor.startEdge(line.x1, line.y1);
-        editor.updateEdge(line.x2, line.y2);
+        editor.startEdge(parseInt(line.x1), parseInt(line.y1));
+        editor.updateEdge(parseInt(line.x2), parseInt(line.y2));
         editor.endEdge();
         undoRedo.undoStack.pop();
       }
     }
-    if (obj.nodes) {
-      var symbols = obj.nodes;
+    if (data.nodes) {
+      var symbols = data.nodes;
       for (const node of symbols) {
         editor.newNode(node.x, node.y, node.icon, node.visible);
         undoRedo.undoStack.pop();
@@ -47,9 +47,10 @@ class Static {
     }
     if (lines || symbols) {
       undoRedo.saveState();
+      console.log(undoRedo.undoStack);
     }
   }
-
+  // loadStaticJson() loads data from a static JSON file and creates nodes and edges
   loadStaticJson() {
     editor.element.innerHTML = ``;
     graph.emptyGraph();
@@ -57,18 +58,18 @@ class Static {
       .then((response) => {
         return response.json();
       })
-      .then((obj) => {
-        if (obj.edges) {
-          var lines = obj.edges;
+      .then((data) => {
+        if (data.edges) {
+          var lines = data.edges;
           for (const line of lines) {
-            editor.startEdge(line.x1, line.y1);
-            editor.updateEdge(line.x2, line.y2);
+            editor.startEdge(parseInt(line.x1), parseInt(line.y1));
+            editor.updateEdge(parseInt(line.x2), parseInt(line.y2));
             editor.endEdge();
             undoRedo.undoStack.pop();
           }
         }
-        if (obj.nodes) {
-          var symbols = obj.nodes;
+        if (data.nodes) {
+          var symbols = data.nodes;
           for (const node of symbols) {
             editor.newNode(node.x, node.y, node.icon, node.visible);
             undoRedo.undoStack.pop();
@@ -76,6 +77,7 @@ class Static {
         }
         if (lines || symbols) {
           undoRedo.saveState();
+          console.log(undoRedo.undoStack);
         }
       })
       .catch((err) => console.log(err));
