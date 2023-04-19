@@ -29,16 +29,10 @@ svg > line{
 .highlight{
   stroke: red;
 }
-.switch button{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.switch img{
   width: 30px;
   height: 30px;
   border: 1px solid black;
-}
-#eraser-select{
-  margin-top: 5px;
 }
 .clicked{
   background-color: gray;
@@ -105,13 +99,6 @@ svg > line{
 #clear-board{
   border: 1px solid black;
   margin-left: 5px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#clear-board img{
   width: 30px;
   height: 30px;
 }
