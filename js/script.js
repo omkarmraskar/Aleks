@@ -200,7 +200,6 @@ class Draw {
       if (distance <= 15) {
         nodeToRemove.push(nodes[i].nodeID);
         break;
-        break;
       }
     }
 
