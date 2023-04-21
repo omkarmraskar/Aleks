@@ -1,3 +1,5 @@
+//STATIC PASSES JSON TO EDITOR. NO EDITOR FUNCTIONS IN STATIC
+
 class Static {
   constructor() {
     const jsonForm = document.getElementById("jsonForm");
@@ -27,58 +29,16 @@ class Static {
   }
   // loadDynamicJson() loads data from a given parameter and creates nodes and edges
   loadDynamicJson(data) {
-    editor.element.innerHTML = ``;
-    graph.emptyGraph();
-    if (data.edges) {
-      var lines = data.edges;
-      for (const line of lines) {
-        editor.startEdge(parseInt(line.x1), parseInt(line.y1));
-        editor.updateEdge(parseInt(line.x2), parseInt(line.y2));
-        editor.endEdge();
-        undoRedo.undoStack.pop();
-      }
-    }
-    if (data.nodes) {
-      var symbols = data.nodes;
-      for (const node of symbols) {
-        editor.newNode(node.x, node.y, node.icon, node.visible);
-        undoRedo.undoStack.pop();
-      }
-    }
-    if (lines || symbols) {
-      undoRedo.saveState();
-      console.log(undoRedo.undoStack);
-    }
+    editor.setLoadedState(data);
   }
   // loadStaticJson() loads data from a static JSON file and creates nodes and edges
   loadStaticJson() {
-    editor.element.innerHTML = ``;
-    graph.emptyGraph();
     fetch("json/data.json")
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        if (data.edges) {
-          var lines = data.edges;
-          for (const line of lines) {
-            editor.startEdge(parseInt(line.x1), parseInt(line.y1));
-            editor.updateEdge(parseInt(line.x2), parseInt(line.y2));
-            editor.endEdge();
-            undoRedo.undoStack.pop();
-          }
-        }
-        if (data.nodes) {
-          var symbols = data.nodes;
-          for (const node of symbols) {
-            editor.newNode(node.x, node.y, node.icon, node.visible);
-            undoRedo.undoStack.pop();
-          }
-        }
-        if (lines || symbols) {
-          undoRedo.saveState();
-          console.log(undoRedo.undoStack);
-        }
+        editor.setLoadedState(data);
       })
       .catch((err) => console.log(err));
   }
