@@ -236,10 +236,10 @@ class Edge {
   }
 // draw() creates an SVG line element with the given coordinates
   draw() {
-    const x1 = this.__nodes[0].x;
-    const y1 = this.__nodes[0].y;
-    const x2 = this.__nodes[1].x;
-    const y2 = this.__nodes[1].y;
+    const x1 = parseFloat(this.__nodes[0].x);
+    const y1 = parseFloat(this.__nodes[0].y);
+    const x2 = parseFloat(this.__nodes[1].x);
+    const y2 = parseFloat(this.__nodes[1].y);
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", x1);
     line.setAttribute("x2", x2);
@@ -252,8 +252,8 @@ class Edge {
 class Node {
   constructor(x = 0, y = 0, icon = "C", visible = false) {
     this.__edges = [[], []]; //this.__edges[0] is the edges for which this is edge.__nodes[0], and this.__edges[1] is the edge for which this is edge.__nodes[1].
-    this.x = x;
-    this.y = y;
+    this.x = parseFloat(x);
+    this.y = parseFloat(y);
     this.icon = icon;
     this.visible = visible;
   }

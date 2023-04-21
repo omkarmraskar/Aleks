@@ -24,6 +24,29 @@ class Draw {
     this.selectIcon();
   }
   // newNode() creates a new node and adds it to the graph
+
+  setLoadedState(state){
+    state = JSON.parse(JSON.stringify(state));
+    if(state){
+      graph.emptyGraph();
+      // console.log(state);
+      const edges = state.edges;
+      if(edges){
+        for(const edge of edges){
+          this.startEdge(edge.x1, edge.y1);
+          this.updateEdge(edge.x2, edge.y2);
+          this.endEdge();
+        }        
+      }
+      const nodes = state.nodes;
+      if(nodes){
+        for(const node of nodes){
+          this.newNode(node.x, node.y, node.icon, node.visible);
+        }
+      }
+      undoRedo.saveState(graph.getRecall());
+    }
+  }
   newNode(x, y, icon, visible) {
     const node = new Node(x, y, icon, visible);
     snapping.snapSymbol(node);
@@ -31,7 +54,6 @@ class Draw {
       this.currentSymbol = graph.addNode(node);
       const nodeHTML = this.currentSymbol.draw();
       this.element.appendChild(nodeHTML);
-      undoRedo.saveState();
     }
     this.currentSymbol = null;
   }
@@ -54,7 +76,7 @@ class Draw {
   // Function to handle pencil events
   pencilEventListener(event) {
     if (event.button === 0) {
-      this.startEdge(Number(event.offsetX), Number(event.offsetY));
+      this.startEdge(event.offsetX, event.offsetY);
     }
   }
   // Function to handle pencil mouse move events
@@ -67,13 +89,18 @@ class Draw {
   // Function to handle pencil mouse up events
   pencilMouseUpEventListener(event) {
     if (event.button === 0) {
-      this.endEdge();
+      const toSave = this.endEdge();
+      if(toSave){
+        undoRedo.saveState(graph.getRecall());
+      };
+      // SAVE STATE HERE
     }
   }
   // Function to handle eraser events
   eraserEventListener(event) {
     if (event.button === 0) {
       this.eraseShapes(Number(event.offsetX), Number(event.offsetY));
+      undoRedo.saveState(graph.getRecall());
     }
   }
 
@@ -106,14 +133,8 @@ class Draw {
   endEdge() {
     this.edge = new Edge(this.node1, this.node2);
     this.element.removeChild(this.element.lastChild);
-    if (
-      !utilities.deleteShortLine(
-        this.node1.x,
-        this.node1.y,
-        this.node2.x,
-        this.node2.y
-      )
-    ) {
+    let toSave = false
+    if (!utilities.deleteShortLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y)){
       if (!graph.isEdgePresent(this.node1, this.node2)) {
         graph.addEdge(this.edge);
         if (!graph.isNodePresent(this.node1)) {
@@ -125,23 +146,16 @@ class Draw {
         const line = this.edge.draw();
         this.element.append(line);
       }
-      undoRedo.saveState();
+      toSave = true;
+      // undoRedo.saveState(graph.getRecall());
     }
 
     this.node1 = null;
     this.node2 = null;
     this.edge = null;
+    return toSave;
   }
-  // getLength() calculates the length of an element
-  getLength(element) {
-    if (element.tagName === "line") {
-      const x1 = Number(element.getAttribute("x1"));
-      const y1 = Number(element.getAttribute("y1"));
-      const x2 = Number(element.getAttribute("x2"));
-      const y2 = Number(element.getAttribute("y2"));
-      return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    }
-  }
+  
   // openIconPopup() sets the position of the icon popup
   openIconPopup(x, y) {
     // Set the position of the icon popup
@@ -169,14 +183,7 @@ class Draw {
     const nodes = curGraph.nodes;
 
     for (let i = 0; i < edges.length; i++) {
-      const distance = utilities.getPerpendicularDistance(
-        x,
-        y,
-        edges[i].source.x,
-        edges[i].source.y,
-        edges[i].target.x,
-        edges[i].target.y
-      );
+      const distance = utilities.getPerpendicularDistance(x, y, edges[i].source.x, edges[i].source.y, edges[i].target.x, edges[i].target.y);
       if (distance <= 15) {
         edgeToRemove.push(edges[i].edgeID);
         const node1ID = graph.getNodeId(edges[i].source);
@@ -193,12 +200,7 @@ class Draw {
     }
 
     for (let i = 0; i < nodes.length; i++) {
-      const distance = utilities.getPerpendicularDistance(
-        x,
-        y,
-        nodes[i].x,
-        nodes[i].y
-      );
+      const distance = utilities.getPerpendicularDistance(x, y, nodes[i].x, nodes[i].y);
       if (distance <= 15) {
         nodeToRemove.push(nodes[i].nodeID);
         break;
@@ -216,8 +218,24 @@ class Draw {
     }
     this.element.innerHTML = "";
     graph.draw();
+  }
 
-    undoRedo.saveState();
+  //Undo current state to previous state
+  undo(){
+    const prevState = JSON.parse(undoRedo.undo());
+    graph.emptyGraph();
+    if(prevState){
+      graph.resetGraph(prevState);
+    }
+  }
+
+  //Redo Current state to next state
+  redo(){
+    const nextState = JSON.parse(undoRedo.redo());
+    graph.emptyGraph();
+    if(nextState){
+      graph.resetGraph(nextState);
+    }
   }
 }
 

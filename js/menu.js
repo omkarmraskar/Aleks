@@ -14,9 +14,8 @@ class Menu {
   // This function sets an event listener for the clear button which clears the editor and graph elements and saves the state of undoRedo. 
   setEventListener() {
     this.clearButton.addEventListener("click", () => {
-      editor.element.innerHTML = ``;
       graph.emptyGraph();
-      undoRedo.saveState();
+      undoRedo.saveState(graph.getRecall());
       this.clearButton.classList.add("clicked");
       setTimeout(() => {
         this.clearButton.classList.remove("clicked");
@@ -24,22 +23,22 @@ class Menu {
     });
     
     this.undo.addEventListener("click", () => {
-      undoRedo.undo();
+      editor.undo();
     });
     
     document.addEventListener("keydown", (event) => {
       if (event.key === "z" && event.ctrlKey) {
-        undoRedo.undo();
+        editor.undo();
       }
     });
     
     this.redo.addEventListener("click", () => {
-      undoRedo.redo();
+      editor.redo();
     });
     
     document.addEventListener("keydown", (event) => {
       if (event.key === "y" && event.ctrlKey) {
-        undoRedo.redo();
+        editor.redo();
       }
     });
 
