@@ -232,8 +232,9 @@ class Draw {
   //Redo Current state to next state
   redo(){
     const nextState = JSON.parse(undoRedo.redo());
-    graph.emptyGraph();
+    
     if(nextState){
+      graph.emptyGraph();
       graph.resetGraph(nextState);
     }
   }
