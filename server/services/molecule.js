@@ -17,13 +17,10 @@ async function getMultiple(page = 1){
 }
 
 async function create(molecule){
-  const result = await db.query(
-    `INSERT INTO programming_languages 
-    (id, Tool_Name, Last_Updated, Author) 
-    VALUES 
-    (${molecule.id}, ${molecule.Tool_Name}, ${molecule.Last_Updated}, ${molecule.Author})`
-  );
+  const test = `INSERT INTO molecule (id, Tool_Name, Author) VALUES ("${molecule.id}", "${molecule.Tool_Name}", "${molecule.Author}")`
 
+  console.log(test);
+  const result = await db.query(test);
   let message = 'Error in creating Molecule';
 
   if (result.affectedRows) {
@@ -32,7 +29,40 @@ async function create(molecule){
 
   return {message};
 }
+
+async function update(id, molecule){
+  const result = await db.query(
+    `UPDATE molecule 
+    SET Tool_Name="${molecule.Tool_Name}", Author="${molecule.Author}" 
+    WHERE id=${id}` 
+  );
+
+  let message = 'Error in updating molecule';
+
+  if (result.affectedRows) {
+    message = 'Molecule updated successfully';
+  }
+
+  return {message};
+}
+
+async function remove(id){
+  const result = await db.query(
+    `DELETE FROM molecule WHERE id=${id}`
+  );
+
+  let message = 'Error in deleting molecule';
+
+  if (result.affectedRows) {
+    message = 'molecule deleted successfully';
+  }
+
+  return {message};
+}
+
 module.exports = {
   getMultiple,
-  create
+  create,
+  update,
+  remove
 }
