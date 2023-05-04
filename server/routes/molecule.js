@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const molecule = require('../services/molecule');
+const molecule = require("../services/molecule");
 
 /* GET molecules */
-router.get('/', async function(req, res, next) {
+router.get("/", async function (req, res, next) {
   try {
     res.json(await molecule.getMultiple(req.query.page));
   } catch (err) {
@@ -13,7 +13,7 @@ router.get('/', async function(req, res, next) {
 });
 
 /* POST molecule */
-router.post('/', async function(req, res, next) {
+router.post("/", async function (req, res, next) {
   try {
     res.json(await molecule.create(req.body));
   } catch (err) {
@@ -23,7 +23,7 @@ router.post('/', async function(req, res, next) {
 });
 
 /* PUT molecule */
-router.put('/:id', async function(req, res, next) {
+router.put("/:id", async function (req, res, next) {
   try {
     res.json(await molecule.update(req.params.id, req.body));
   } catch (err) {
