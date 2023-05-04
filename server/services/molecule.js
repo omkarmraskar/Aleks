@@ -1,11 +1,12 @@
 const db = require('./db');
 const helper = require('../helper');
 const config = require('../config');
+const mysql = require('mysql');
 
 async function getMultiple(page = 1){
   const offset = helper.getOffset(page, config.listPerPage);
   const rows = await db.query(
-    `SELECT id, Tool_Name, Last_Updated, Author FROM molecule LIMIT ${offset},${config.listPerPage}`
+    `SELECT id, Tool_Name, Tool_JSON, Last_Updated, Author FROM molecule LIMIT ${offset},${config.listPerPage}`
   );
   const data = helper.emptyOrRows(rows);
   const meta = {page};
@@ -17,10 +18,23 @@ async function getMultiple(page = 1){
 }
 
 async function create(molecule){
-  const test = `INSERT INTO molecule (id, Tool_Name, Author) VALUES ("${molecule.id}", "${molecule.Tool_Name}", "${molecule.Author}")`
 
-  console.log(test);
-  const result = await db.query(test);
+  const moleculeData = {
+    id: molecule.id,
+    Tool_Name: molecule.Tool_Name,
+    Tool_JSON: molecule.Tool_JSON,
+    Author: molecule.Author
+  };
+
+  console.log("\n\n");
+  console.log(moleculeData.Tool_JSON);
+  console.log("\n\n");
+  // const tool_json = JSON.stringify(molecule.Tool_JSON);
+  const test = `INSERT INTO molecule (Tool_Name, Tool_JSON, Author) VALUES (?, ?, ?)`;
+  const values = [moleculeData.Tool_Name, moleculeData.Tool_JSON, moleculeData.Author];
+
+  console.log(test, values);
+  const result = await db.query(test, values);
   let message = 'Error in creating Molecule';
 
   if (result.affectedRows) {
@@ -33,7 +47,7 @@ async function create(molecule){
 async function update(id, molecule){
   const result = await db.query(
     `UPDATE molecule 
-    SET Tool_Name="${molecule.Tool_Name}", Author="${molecule.Author}" 
+    SET Tool_Name="${molecule.Tool_Name}", Tool_JSON="${molecule.Tool_JSON}", Author="${molecule.Author}"
     WHERE id=${id}` 
   );
 
