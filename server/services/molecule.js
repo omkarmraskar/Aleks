@@ -22,7 +22,7 @@ async function create(molecule){
   const moleculeData = {
     id: molecule.id,
     Tool_Name: molecule.Tool_Name,
-    Tool_JSON: molecule.Tool_JSON,
+    Tool_JSON: molecule.Tool_JSON ? molecule.Tool_JSON : null,
     Author: molecule.Author
   };
 
