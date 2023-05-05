@@ -5,7 +5,7 @@ const molecule = require('../services/molecule');
 /* GET molecules */
 router.get('/', async function(req, res, next) {
   try {
-    res.json(await molecule.getMultiple(req.query.page));
+    res.json(await molecule.getMultiple());
   } catch (err) {
     console.error(`Error while getting Molecule`, err.message);
     next(err);

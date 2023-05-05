@@ -3,17 +3,17 @@ const helper = require('../helper');
 const config = require('../config');
 const mysql = require('mysql');
 
-async function getMultiple(page = 1){
-  const offset = helper.getOffset(page, config.listPerPage);
+async function getMultiple(){
+  // const offset = helper.getOffset(page, config.listPerPage);
   const rows = await db.query(
-    `SELECT id, Tool_Name, Tool_JSON, Last_Updated, Author FROM molecule WHERE id > 0 LIMIT ${offset},${config.listPerPage}`
+    `SELECT id, Tool_Name, Tool_JSON, Last_Updated, Author FROM molecule WHERE id > 0`
   );
   const data = helper.emptyOrRows(rows);
-  const meta = {page};
+  // const meta = {page};
 
   return {
-    data,
-    meta
+    data
+    // meta
   }
 }
 
