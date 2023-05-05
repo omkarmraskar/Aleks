@@ -12,8 +12,18 @@ router.get('/', async function(req, res, next) {
   }
 });
 
-/* POST molecule */
-router.post('/', async function(req, res, next) {
+/*Get molecule by ID */
+router.get('/:id', async function(req, res, next) {
+  try {
+    res.json(await molecule.getFromID(req.params.id));
+  } catch (err) {
+    console.error(`Error while getting Molecule`, err.message);
+    next(err);
+  }
+});
+
+/* Create molecule */
+router.post('/create', async function(req, res, next) {
   try {
     res.json(await molecule.create(req.body));
   } catch (err) {
@@ -22,8 +32,8 @@ router.post('/', async function(req, res, next) {
   }
 });
 
-/* PUT molecule */
-router.put('/:id', async function(req, res, next) {
+/* Update Molecule */
+router.post('/update/:id',  async function(req, res , next){
   try {
     res.json(await molecule.update(req.params.id, req.body));
   } catch (err) {
@@ -33,7 +43,7 @@ router.put('/:id', async function(req, res, next) {
 });
 
 /* DELETE molecule */
-router.delete('/:id', async function(req, res, next) {
+router.post('/delete/:id', async function(req, res, next) {
   try {
     res.json(await molecule.remove(req.params.id));
   } catch (err) {

@@ -6,7 +6,7 @@ const mysql = require('mysql');
 async function getMultiple(page = 1){
   const offset = helper.getOffset(page, config.listPerPage);
   const rows = await db.query(
-    `SELECT id, Tool_Name, Tool_JSON, Last_Updated, Author FROM molecule LIMIT ${offset},${config.listPerPage}`
+    `SELECT id, Tool_Name, Tool_JSON, Last_Updated, Author FROM molecule WHERE id > 0 LIMIT ${offset},${config.listPerPage}`
   );
   const data = helper.emptyOrRows(rows);
   const meta = {page};
@@ -26,14 +26,9 @@ async function create(molecule){
     Author: molecule.Author
   };
 
-  console.log("\n\n");
-  console.log(moleculeData.Tool_JSON);
-  console.log("\n\n");
-  // const tool_json = JSON.stringify(molecule.Tool_JSON);
   const test = `INSERT INTO molecule (Tool_Name, Tool_JSON, Author) VALUES (?, ?, ?)`;
   const values = [moleculeData.Tool_Name, moleculeData.Tool_JSON, moleculeData.Author];
 
-  console.log(test, values);
   const result = await db.query(test, values);
   let message = 'Error in creating Molecule';
 
@@ -45,12 +40,10 @@ async function create(molecule){
 }
 
 async function update(id, molecule){
-  const result = await db.query(
-    `UPDATE molecule 
-    SET Tool_Name="${molecule.Tool_Name}", Tool_JSON="${molecule.Tool_JSON}", Author="${molecule.Author}"
-    WHERE id=${id}` 
-  );
-
+  const test = `UPDATE molecule SET Tool_Name=?, Tool_JSON=?, Author=? WHERE id=?`;
+  const moleculeJSON = molecule.Tool_JSON;
+  const values = [molecule.Tool_Name, moleculeJSON, molecule.Author, id];
+  const result = await db.query(test, values);
   let message = 'Error in updating molecule';
 
   if (result.affectedRows) {
@@ -61,8 +54,9 @@ async function update(id, molecule){
 }
 
 async function remove(id){
+  const newID = (-1)*(parseInt(id));  
   const result = await db.query(
-    `DELETE FROM molecule WHERE id=${id}`
+    `UPDATE molecule SET id="${newID}" WHERE id=${id}`
   );
 
   let message = 'Error in deleting molecule';
@@ -74,8 +68,23 @@ async function remove(id){
   return {message};
 }
 
+async function getFromID(id){
+  const result = await db.query(
+    `SELECT id, Tool_Name, Tool_JSON, Last_Updated, Author FROM molecule WHERE id = ${id}`
+  );
+
+  let message = 'Error getting molecule';
+
+  if(result.affectedRows){
+    message = 'Molecule Acquired successfully';
+  }
+  const data = helper.emptyOrRows(result);
+  return {data};
+}
+
 module.exports = {
   getMultiple,
+  getFromID,
   create,
   update,
   remove
