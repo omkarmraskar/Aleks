@@ -1,15 +1,16 @@
 tr {
     height: 25%;
   }
-  table {
+table {
     border: 1px solid black;
-  }td {
+  }
+td {
     padding: 8px;
     text-align: center;
   }
-  form{
+form{
     margin-bottom: 20px;
   }
-  input[type="submit"] {
+input[type="submit"] {
     margin-left: 5px;
   }

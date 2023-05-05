@@ -17,7 +17,7 @@ function addDivs() {
   author.style.marginLeft = "5px";
   // create submit button
   const submit = document.createElement("input");
-  submit.type = "submit";
+  submit.type = "button";
   submit.value = "Submit";
   // add event listener to submit button
   submit.addEventListener("click", function (event) {
@@ -30,6 +30,8 @@ function addDivs() {
     input.value = ""; // clear the input field
     author.value = "";
   });
+  form.setAttribute("method", "POST");
+  form.setAttribute("action", "http://localhost:3000/molecule/");
   // append input and submit to form
   form.appendChild(input);
   form.appendChild(author);
@@ -116,7 +118,6 @@ function loadStaticJson() {
     .then((response) => {
       if (response.ok) {
         return response.json();
-        // console.log(response);
       } else {
         throw new Error("Failed to load table data");
       }

@@ -1,7 +1,37 @@
 curl -i -X POST -H 'Accept: application/json' \
--H 'Content-type: application/json' http://localhost:3000/molecule \ 
+-H 'Content-type: application/json' http://localhost:3000/molecule \
 --data '{
   "id": 12,
-  "Tool_Name": "H2",
+  "Tool_Name": "H4",
+  "Tool_JSON": {
+    "edges": [
+      {
+        "x1": "58",
+        "y1": "211",
+        "x2": "181",
+        "y2": "49"
+      },
+      {
+        "x1": "181",
+        "y1": "49",
+        "x2": "237",
+        "y2": "298"
+      }
+    ],
+    "nodes": [
+      {
+        "x": "58",
+        "y": "225",
+        "icon": "C",
+        "visible": true
+      },
+      {
+        "x": "450",
+        "y": "90",
+        "icon": "H",
+        "visible": true
+      }
+    ]
+  },
   "Author": "Omkar"
 }'
