@@ -31,4 +31,15 @@ router.put('/:id', async function(req, res, next) {
     next(err);
   }
 });
+
+/* DELETE molecule */
+router.delete('/:id', async function(req, res, next) {
+  try {
+    res.json(await molecule.remove(req.params.id));
+  } catch (err) {
+    console.error(`Error while deleting molecule`, err.message);
+    next(err);
+  }
+});
+
 module.exports = router;
