@@ -31,12 +31,14 @@ async function create(molecule){
 
   const result = await db.query(test, values);
   let message = 'Error in creating Molecule';
+  let id;
 
   if (result.affectedRows) {
     message = 'Molecule created successfully';
+    id = `${result.insertId}`;
   }
 
-  return {message};
+  return {message, id};
 }
 
 async function update(id, molecule){

@@ -1,2 +1,6 @@
 curl -i -X POST -H 'Accept: application/json' \
--H 'Content-type: application/json' http://localhost:3000/molecule/delete/12 \
+-H 'Content-type: application/json' http://localhost:3000/molecule/create/ \
+--data '{
+    "Tool_Name" : "N2",
+    "Author" : "Omkar"
+}'

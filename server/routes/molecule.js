@@ -25,7 +25,8 @@ router.get('/:id', async function(req, res, next) {
 /* Create molecule */
 router.post('/create', async function(req, res, next) {
   try {
-    res.json(await molecule.create(req.body));
+    const {message, id} = await molecule.create(req.body)
+    res.json({message, id});
   } catch (err) {
     console.error(`Error while creating Molecule`, err.message);
     next(err);
