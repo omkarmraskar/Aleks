@@ -29,18 +29,20 @@ class Draw {
     state = JSON.parse(JSON.stringify(state));
     if(state){
       graph.emptyGraph();
+      // console.log(graph);
       // console.log(state);
       const edges = state.edges;
       if(edges){
         for(const edge of edges){
-          this.startEdge(edge.x1, edge.y1);
-          this.updateEdge(edge.x2, edge.y2);
+          this.startEdge(edge.source.x, edge.source.y);
+          this.updateEdge(edge.target.x,edge.target.y);
           this.endEdge();
         }        
       }
       const nodes = state.nodes;
       if(nodes){
         for(const node of nodes){
+          // console.log(node)
           this.newNode(node.x, node.y, node.icon, node.visible);
         }
       }
@@ -50,11 +52,12 @@ class Draw {
   newNode(x, y, icon, visible) {
     const node = new Node(x, y, icon, visible);
     snapping.snapSymbol(node);
-    if (!graph.isNodePresent(node)) {
+    // if (!graph.isNodePresent(node)) {
       this.currentSymbol = graph.addNode(node);
       const nodeHTML = this.currentSymbol.draw();
       this.element.appendChild(nodeHTML);
-    }
+      // console.log(nodeHTML);
+    // }
     this.currentSymbol = null;
   }
   // onEvent() sets up event listeners for the given buttons
