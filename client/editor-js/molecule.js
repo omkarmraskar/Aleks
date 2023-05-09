@@ -5,16 +5,16 @@ var id = urlParams.get("id");
 // Store the ID in a variable for later use
 var moleculeId = id;
 // console.log(id);
-if (window.location.pathname === '/client/editor.html') {
-    // Check if the URL contains an 'id' parameter
-    var urlParams = new URLSearchParams(window.location.search);
-    var id = urlParams.get("id");
-    if (!id) {
-      // If 'id' parameter is not present, display an alert message and redirect to index.html
-      alert("ID parameter not found in URL. Redirecting to index.html...");
-      window.location.href = "index.html";
-    }
+if (window.location.pathname === "/client/editor.html") {
+  // Check if the URL contains an 'id' parameter
+  var urlParams = new URLSearchParams(window.location.search);
+  var id = urlParams.get("id");
+  if (!id) {
+    // If 'id' parameter is not present, display an alert message and redirect to index.html
+    alert("ID parameter not found in URL. Redirecting to index.html...");
+    window.location.href = "index.html";
   }
+}
 // Add an event listener for the Update button
 var updateButton = document.createElement("button");
 updateButton.innerText = "Update";
@@ -65,23 +65,24 @@ function loadData(moleculeId) {
       // Hide the loading icon
       loadingIcon.style.display = "none";
       data = data.data[0];
-        // console.log(data);
-      if ((!data.Tool_JSON) || (data.Tool_JSON.edges.length === 0 && data.Tool_JSON.nodes.length === 0)) {
-        console.log(
-          "tool_Json not present for id:",
-          moleculeId,
-          ":Loading Static Data"
-        );
-        static.loadStaticJson();
-      } else {
-        console.log(
-          "tool_Json present for id:",
-          moleculeId,
-          ":Loading Dynamic Data"
-        );
-        // console.log(data.Tool_JSON);
-        static.loadDynamicJson(data.Tool_JSON);
-      }
+      // console.log(data);
+      //   if ((!data.Tool_JSON) || (data.Tool_JSON.edges.length === 0 && data.Tool_JSON.nodes.length === 0)) {
+      //     console.log(
+      //       "tool_Json not present for id:",
+      //       moleculeId,
+      //       ":Loading Static Data"
+      //     );
+      //     static.loadStaticJson();
+      //   } else {
+      //     console.log(
+      //       "tool_Json present for id:",
+      //       moleculeId,
+      //       ":Loading Dynamic Data"
+      //     );
+      //     // console.log(data.Tool_JSON);
+      //     static.loadDynamicJson(data.Tool_JSON);
+      //   }
+      static.loadDynamicJson(data.Tool_JSON);
     })
     .catch((error) => {
       console.error("There was a problem with the fetch operation:", error);

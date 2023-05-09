@@ -218,7 +218,8 @@ document.addEventListener("click", function (event) {
     var rowId = event.target.dataset.rowId;
     // Construct the URL for the new webpage with the ID as a GET parameter
     var url =
-      "http://localhost:5000/client/editor.html?id=" +
+      window.location.origin +
+      "/client/editor.html?id=" +
       encodeURIComponent(rowId);
     // Open the URL in a new tab
     var tab = window.open(url, "_blank");
