@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+// const port = 3000;
+const config = require("./config");
 const moleculeRouter = require("./routes/molecule");
 const db = require("./services/db");
 const cors = require('cors');
@@ -24,6 +25,6 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ message: err.message });
   return;
 });
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+app.listen(config.port, () => {
+  console.log(`Example app listening at ${config.serverUrl}${config.port}`);
 });

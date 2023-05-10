@@ -1,3 +1,5 @@
+const serverUrl = "http://localhost:3000";
+// function to create html form and table
 function addDivs() {
   // create first div
   const div1 = document.createElement("div");
@@ -28,10 +30,8 @@ function addDivs() {
     event.preventDefault(); // prevent form submission
     const tool_name = input.value;
     const author_name = author.value;
-    const id = table.rows.length; // get the next ID
     const date = new Date().toISOString().split("T")[0]; // get the current date
-    submitData(tool_name, author_name);
-    addRow(id, tool_name, author_name, date); // add the new row to the table
+    updateMoleculeIdInHtml(tool_name, author_name, date);
     input.value = ""; // clear the input field
     author.value = "";
   });
@@ -75,41 +75,81 @@ function addDivs() {
 
   document.body.appendChild(div1);
   document.body.appendChild(div2);
-  loadStaticJson();
+  loadHtmlFromDb();
 }
-// function to add new row in database
-function submitData(toolName, author) {
+// function to load database and add rows in html
+function loadHtmlFromDb() {
   // Show the loading icon
   var loadingIcon = document.getElementById("loading-icon");
   loadingIcon.style.display = "block";
+  const url = serverUrl + "/molecule";
+  fetch(url)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Failed to load table data");
+      }
+    })
+    .then((data) => {
+      data = data.data;
+      // console.log(data);
+      // loop through the data and add it to the table
+      for (let i = 0; i < data.length; i++) {
+        const table = document.querySelector("table");
+        const date = data[i].Last_Updated.split("T")[0];
+        const row = table.insertRow(i + 1);
+        const cell1 = row.insertCell(0);
+        const cell2 = row.insertCell(1);
+        const cell3 = row.insertCell(2);
+        const cell4 = row.insertCell(3);
+        const cell5 = row.insertCell(4);
+        cell1.innerText = data[i].id;
+        cell2.innerHTML = `<a href="#" class="row-link" data-row-id="${data[i].id}">${data[i].Tool_Name}</a>`;
+        cell3.innerText = data[i].Author;
+        cell4.innerText = date;
+        cell5.innerHTML = `<button class = "delete" data-row-id="${data[i].id}">Delete</button>`;
+      }
+      // Hide the loading icon
+      loadingIcon.style.display = "none";
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+// function to add new row in database
+async function addRowInDb(toolName, author) {
   const formData = new FormData();
   formData.append("Tool_Name", toolName);
   formData.append("Author", author);
   const urlEncodedData = new URLSearchParams(formData).toString();
-  console.log(urlEncodedData);
-  fetch("http://localhost:3000/molecule/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: urlEncodedData,
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log("Molecule created successfully:", response);
-        // Do something with the response if needed
-      } else {
-        console.error("Error in creating Molecule:", response.statusText);
-      }
-    })
-    .catch((error) => {
-      console.error("Fetch Request failed:", error);
+  // console.log(urlEncodedData);
+  var apiUrl = serverUrl + "/molecule/create";
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: urlEncodedData,
     });
+
+    if (response.ok) {
+      const result = await response.json();
+      // console.log("Molecule created successfully:", result);
+      return result.id; // return the id value from the response
+    } else {
+      console.error("Error in creating Molecule:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Fetch Request failed:", error);
+  }
   // Hide the loading icon
   loadingIcon.style.display = "none";
 }
+
 // function to add rows to html-table
-function addRow(id, tool_name, author_name, date) {
+async function addRowInHtml(id, tool_name, author_name, date) {
   const table = document.querySelector("table");
   const tr = document.createElement("tr");
   const td1 = document.createElement("td");
@@ -137,44 +177,18 @@ function addRow(id, tool_name, author_name, date) {
   tr.appendChild(td4);
   tr.appendChild(td5);
   table.appendChild(tr);
+  table.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
-function loadStaticJson() {
+async function updateMoleculeIdInHtml(tool_name, author_name, date) {
   // Show the loading icon
   var loadingIcon = document.getElementById("loading-icon");
   loadingIcon.style.display = "block";
-  fetch("http://localhost:3000/molecule")
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error("Failed to load table data");
-      }
-    })
-    .then((data) => {
-      data = data.data;
-      console.log(data);
-      // loop through the data and add it to the table
-      for (let i = 0; i < data.length; i++) {
-        const table = document.querySelector("table");
-        const date = data[i].Last_Updated.split("T")[0];
-        const row = table.insertRow(i + 1);
-        const cell1 = row.insertCell(0);
-        const cell2 = row.insertCell(1);
-        const cell3 = row.insertCell(2);
-        const cell4 = row.insertCell(3);
-        const cell5 = row.insertCell(4);
-        cell1.innerText = data[i].id;
-        cell2.innerHTML = `<a href="#" class="row-link" data-row-id="${data[i].id}">${data[i].Tool_Name}</a>`;
-        cell3.innerText = data[i].Author;
-        cell4.innerText = date;
-        cell5.innerHTML = `<button class = "delete" data-row-id="${data[i].id}">Delete</button>`;
-      }
-      // Hide the loading icon
-      loadingIcon.style.display = "none";
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+
+  const id = await addRowInDb(tool_name, author_name);
+  await addRowInHtml(id, tool_name, author_name, date); // add the new row to the table
+
+  // Hide the loading icon
+  loadingIcon.style.display = "none";
 }
 document.addEventListener("click", function (event) {
   // Check if the clicked element is a delete button
@@ -182,8 +196,7 @@ document.addEventListener("click", function (event) {
     // Get the ID of the row to delete from the button's data attribute
     var rowId = event.target.dataset.rowId;
     // Construct the URL for the POST request
-    var url =
-      "http://localhost:3000/molecule/delete/" + encodeURIComponent(rowId);
+    var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
     // Show the loading icon
     var loadingIcon = document.getElementById("loading-icon");
     loadingIcon.style.display = "block";
