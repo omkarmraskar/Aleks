@@ -106,7 +106,7 @@ function loadHtmlFromDb() {
         const cell4 = row.insertCell(3);
         const cell5 = row.insertCell(4);
         cell1.innerText = data[i].id;
-        cell2.innerHTML = `<a href="#" class="row-link" data-row-id="${data[i].id}">${data[i].Tool_Name}</a>`;
+        cell2.innerHTML = `<a href="#" class="row-link" data-row-id="${data[i].id}" data-author="${data[i].Author}">${data[i].Tool_Name}</a>`;
         cell3.innerText = data[i].Author;
         cell4.innerText = date;
         cell5.innerHTML = `<button class = "delete" data-row-id="${data[i].id}" data-author="${data[i].Author}">Delete</button>`;
@@ -166,6 +166,7 @@ async function addRowInHtml(id, tool_name, author_name, date) {
   alink.innerHTML = tool_name;
   alink.setAttribute("class", "row-link");
   alink.setAttribute("data-row-id", id);
+  alink.setAttribute('data-author',author_name);
   alink.setAttribute("href", "#");
   td2.appendChild(alink);
   const td3 = document.createElement("td");
@@ -225,7 +226,7 @@ document.addEventListener("click", function (event) {
     var loggedInUser = localStorage.getItem("username");
     // console.log(loggedInUser);
     // Only send the delete request if the author of the row is the same as the logged-in user
-    if (rowAuthor === loggedInUser) {
+    if (rowAuthor.toLowerCase() === loggedInUser.toLowerCase()) {
       // Construct the URL for the POST request
       var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
       // Show the loading icon
@@ -265,11 +266,13 @@ document.addEventListener("click", function (event) {
     event.target.classList.add("active");
     // Get the ID of the row to link to from the link's data attribute
     var rowId = event.target.dataset.rowId;
+    // console.log(event.target.dataset);
+    var rowAuthor = event.target.dataset.author;
     // Construct the URL for the new webpage with the ID as a GET parameter
     var url =
       window.location.origin +
       "/client/editor.html?id=" +
-      encodeURIComponent(rowId);
+      encodeURIComponent(rowId) + '&author=' + encodeURIComponent(rowAuthor);
     // Open the URL in a new tab
     var tab = window.open(url, "_blank");
     tab.focus();
