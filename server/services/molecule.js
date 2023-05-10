@@ -56,6 +56,18 @@ async function update(id, molecule){
 }
 
 async function remove(id){
+
+  const verify = await db.query(
+    `SELECT Author FROM molecule WHERE id=${id}`
+  );
+  if (verify.length === 0) {
+    throw new Error('Molecule Not Found');
+  }
+  const moleculeAuthorName = verify[0].Author;
+  if (moleculeAuthorName !== authorName) {
+    throw new Error('You are not authorized to delete this molecule');
+  }
+
   const newID = (-1)*(parseInt(id));  
   const result = await db.query(
     `UPDATE molecule SET id="${newID}" WHERE id=${id}`

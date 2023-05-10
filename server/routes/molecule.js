@@ -46,7 +46,8 @@ router.post('/update/:id',  async function(req, res , next){
 /* DELETE molecule */
 router.post('/delete/:id', async function(req, res, next) {
   try {
-    res.json(await molecule.remove(req.params.id));
+    const authorName = 'Omkar'; //temp author
+    res.json(await molecule.remove(req.params.id, authorName));
   } catch (err) {
     console.error(`Error while deleting molecule`, err.message);
     next(err);
