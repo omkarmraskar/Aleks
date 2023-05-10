@@ -1,14 +1,9 @@
-// Get a reference to the ID parameter in the URL
-var urlParams = new URLSearchParams(window.location.search);
-var id = urlParams.get("id");
-
-// Store the ID in a variable for later use
-var moleculeId = id;
-// console.log(id);
+var serverUrl = "http://localhost:3000";
 if (window.location.pathname === "/client/editor.html") {
   // Check if the URL contains an 'id' parameter
   var urlParams = new URLSearchParams(window.location.search);
   var id = urlParams.get("id");
+  var moleculeId = id;
   if (!id) {
     // If 'id' parameter is not present, display an alert message and redirect to index.html
     alert("ID parameter not found in URL. Redirecting to index.html...");
@@ -28,8 +23,7 @@ updateButton.addEventListener("click", function (event) {
   var loadingIcon = document.getElementById("loading-icon");
   loadingIcon.style.display = "block";
 
-  var url =
-    "http://localhost:3000/molecule/update/" + encodeURIComponent(moleculeId);
+  var url = serverUrl + "/molecule/update/" + encodeURIComponent(moleculeId);
   fetch(url, {
     method: "POST",
     headers: {
@@ -46,6 +40,11 @@ updateButton.addEventListener("click", function (event) {
       alert("Molecule updated successfully");
     })
     .catch((error) => {
+      // Hide the loading icon
+      loadingIcon.style.display = "none";
+      if (error.message === "Failed to fetch") {
+        window.alert("Connection to server failed. Error in updating molecule. Please try again later.");
+      }
       console.error("There was a problem with the fetch operation:", error);
     });
 });
@@ -53,7 +52,7 @@ function loadData(moleculeId) {
   // Show the loading icon
   var loadingIcon = document.getElementById("loading-icon");
   loadingIcon.style.display = "block";
-  var url = "http://localhost:3000/molecule/" + encodeURIComponent(moleculeId);
+  var url = serverUrl + "/molecule/" + encodeURIComponent(moleculeId);
   fetch(url)
     .then((response) => {
       if (!response.ok) {
@@ -85,7 +84,12 @@ function loadData(moleculeId) {
       static.loadDynamicJson(data.Tool_JSON);
     })
     .catch((error) => {
+      if (error.message === "Failed to fetch") {
+        window.alert("Connection to server failed. Error getting molecule. Please try again later.");
+      }
       console.error("There was a problem with the fetch operation:", error);
+      // Hide the loading icon
+      loadingIcon.style.display = "none";
     });
 }
 loadData(moleculeId);

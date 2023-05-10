@@ -1,4 +1,4 @@
-const serverUrl = "http://localhost:3000";
+var serverUrl = "http://localhost:3000";
 // function to create html form and table
 function addDivs() {
   // create first div
@@ -6,6 +6,7 @@ function addDivs() {
   div1.style.height = "25%";
   // create form
   const form = document.createElement("form");
+  form.style.marginTop = "10px";
   // create input field
   const input = document.createElement("input");
   input.type = "text";
@@ -108,12 +109,17 @@ function loadHtmlFromDb() {
         cell2.innerHTML = `<a href="#" class="row-link" data-row-id="${data[i].id}">${data[i].Tool_Name}</a>`;
         cell3.innerText = data[i].Author;
         cell4.innerText = date;
-        cell5.innerHTML = `<button class = "delete" data-row-id="${data[i].id}">Delete</button>`;
+        cell5.innerHTML = `<button class = "delete" data-row-id="${data[i].id}" data-author="${data[i].Author}">Delete</button>`;
       }
       // Hide the loading icon
       loadingIcon.style.display = "none";
     })
     .catch((error) => {
+      // Hide the loading icon
+      loadingIcon.style.display = "none";
+      if (error.message === "Failed to fetch") {
+        window.alert("Connection to server failed. Please try again later.");
+      }
       console.error("Error:", error);
     });
 }
@@ -142,10 +148,11 @@ async function addRowInDb(toolName, author) {
       console.error("Error in creating Molecule:", response.statusText);
     }
   } catch (error) {
+    if (error.message === "Failed to fetch") {
+      window.alert("Connection to server failed. Please try again later.");
+    }
     console.error("Fetch Request failed:", error);
   }
-  // Hide the loading icon
-  loadingIcon.style.display = "none";
 }
 
 // function to add rows to html-table
@@ -169,6 +176,7 @@ async function addRowInHtml(id, tool_name, author_name, date) {
   const button = document.createElement("button");
   button.setAttribute("class", "delete");
   button.setAttribute("data-row-id", id);
+  button.setAttribute('data-author',author_name);
   button.innerHTML = "Delete";
   td5.appendChild(button);
   tr.appendChild(td1);
@@ -177,15 +185,29 @@ async function addRowInHtml(id, tool_name, author_name, date) {
   tr.appendChild(td4);
   tr.appendChild(td5);
   table.appendChild(tr);
-  table.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  table.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 async function updateMoleculeIdInHtml(tool_name, author_name, date) {
   // Show the loading icon
   var loadingIcon = document.getElementById("loading-icon");
   loadingIcon.style.display = "block";
 
-  const id = await addRowInDb(tool_name, author_name);
-  await addRowInHtml(id, tool_name, author_name, date); // add the new row to the table
+  if (tool_name.length == 0) {
+    alert("Enter tool Name");
+    // Hide the loading icon
+    loadingIcon.style.display = "none";
+    return;
+  } else if (author_name.length == 0) {
+    alert("Enter author Name");
+    // Hide the loading icon
+    loadingIcon.style.display = "none";
+    return;
+  } else {
+    var id = await addRowInDb(tool_name, author_name);
+  }
+  if (id) {
+    await addRowInHtml(id, tool_name, author_name, date); // add the new row to the table
+  }
 
   // Hide the loading icon
   loadingIcon.style.display = "none";
@@ -195,28 +217,42 @@ document.addEventListener("click", function (event) {
   if (event.target && event.target.matches("button.delete")) {
     // Get the ID of the row to delete from the button's data attribute
     var rowId = event.target.dataset.rowId;
-    // Construct the URL for the POST request
-    var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
-    // Show the loading icon
-    var loadingIcon = document.getElementById("loading-icon");
-    loadingIcon.style.display = "block";
-    // Send the POST request
-    fetch(url, {
-      method: "POST",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        // Remove the row from the table
-        var row = event.target.parentElement.parentElement;
-        row.parentNode.removeChild(row);
-        // Hide the loading icon
-        loadingIcon.style.display = "none";
+    // console.log(rowId);
+    // Get the author of the row
+    var rowAuthor = event.target.dataset.author;
+    // console.log(rowAuthor);
+    // Get the logged-in user
+    var loggedInUser = localStorage.getItem("username");
+    // console.log(loggedInUser);
+    // Only send the delete request if the author of the row is the same as the logged-in user
+    if (rowAuthor === loggedInUser) {
+      // Construct the URL for the POST request
+      var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
+      // Show the loading icon
+      var loadingIcon = document.getElementById("loading-icon");
+      loadingIcon.style.display = "block";
+      // Send the POST request
+      fetch(url, {
+        method: "POST",
       })
-      .catch((error) => {
-        console.error("There was a problem with the fetch operation:", error);
-      });
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          // Remove the row from the table
+          var row = event.target.parentElement.parentElement;
+          row.parentNode.removeChild(row);
+          alert("Deleted Row successfully");
+          // Hide the loading icon
+          loadingIcon.style.display = "none";
+        })
+        .catch((error) => {
+          console.error("There was a problem with the fetch operation:", error);
+        });
+    } else {
+      // Show an alert message if the user is not authorized to delete the row
+      alert("You are not authorized to delete this row.");
+    }
   } else if (event.target && event.target.matches("a.row-link")) {
     // Prevent the default behavior of the link
     event.preventDefault();
@@ -239,4 +275,37 @@ document.addEventListener("click", function (event) {
     tab.focus();
   }
 });
+// script.js
+function Username() {
+  let username = localStorage.getItem("username");
+  if (!username) {
+    while (!username) {
+      username = window.prompt("Please enter your username:");
+    }
+    localStorage.setItem("username", username);
+  }
+
+  const usernameElement = window.document.createElement("div");
+  usernameElement.innerHTML = `Logged in as: ${username}`;
+
+  const logoutButton = window.document.createElement("button");
+  logoutButton.innerHTML = "Logout";
+  logoutButton.style.marginLeft = "auto";
+
+  const container = window.document.createElement("div");
+  container.style.display = "flex";
+  container.style.alignItems = "center";
+  container.appendChild(usernameElement);
+  container.appendChild(logoutButton);
+
+  logoutButton.addEventListener("click", function () {
+    localStorage.removeItem("username");
+    window.location.reload();
+  });
+
+  const body = window.document.querySelector("body");
+  body.appendChild(container);
+}
+
+Username();
 addDivs();
