@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="editor.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <div class="svg-wrap" id="svg-wrap">
+        <span id="board-text"
+          >Click and drag to start drawing a structure.</span
+        >
+        <svg id="board"></svg>
+      </div>
+      <!-- <div class="switch">
+        <button id="pencil-select">
+          <img src="icons/pencil.svg" alt="" />
+        </button>
+        <button id="eraser-select">
+          <img src="icons/eraser.svg" alt="" />
+        </button>
+      </div>
+      
+      <div id="undo-redo">
+        <button id="undo-button"><img src="icons/undo.png" alt="" /></button>
+        <button id="redo-button"><img src="icons/redo.jpg" alt="" /></button>
+      </div>
+      <img id="clear-board" src="./icons/clear-all.png" /> -->
+    </div>
+    <div id="icon-popup">
+        <div class="icon" data-icon="icon1">C</div>
+        <div class="icon" data-icon="icon2">H</div>
+        <div class="icon" data-icon="icon3">N</div>
+      </div>
+    <div id="loading-icon"></div>
+    <!-- <form id="jsonForm">
+      <input type="file" accept="application/json" id="jsonFileInput" />
+      <button type="submit" id="parseButton">Parse File</button>
+      <button id="redraw">Load Static Data</button>
+    </form> -->
+    <script src="editor-js/script.js"></script>
+    <script src="editor-js/menu.js"></script>
+    <script src="editor-js/graph.js"></script>
+    <script src="editor-js/snapping.js"></script>
+    <script src="editor-js/utilities.js"></script>
+    <script src="editor-js/static.js"></script>
+    <script src="editor-js/molecule.js"></script>
+    <script src="editor-js/undoredo.js"></script>
+  </body>
+</html>

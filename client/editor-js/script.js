@@ -25,22 +25,24 @@ class Draw {
   }
   // newNode() creates a new node and adds it to the graph
 
-  setLoadedState(state){
+  setLoadedState(state) {
     state = JSON.parse(JSON.stringify(state));
-    if(state){
+    if (state) {
       graph.emptyGraph();
+      // console.log(graph);
       // console.log(state);
       const edges = state.edges;
-      if(edges){
-        for(const edge of edges){
-          this.startEdge(edge.x1, edge.y1);
-          this.updateEdge(edge.x2, edge.y2);
+      if (edges) {
+        for (const edge of edges) {
+          this.startEdge(edge.source.x, edge.source.y);
+          this.updateEdge(edge.target.x, edge.target.y);
           this.endEdge();
-        }        
+        }
       }
       const nodes = state.nodes;
-      if(nodes){
-        for(const node of nodes){
+      if (nodes) {
+        for (const node of nodes) {
+          // console.log(node)
           this.newNode(node.x, node.y, node.icon, node.visible);
         }
       }
@@ -48,12 +50,15 @@ class Draw {
     }
   }
   newNode(x, y, icon, visible) {
-    const node = new Node(x, y, icon, visible);
-    snapping.snapSymbol(node);
-    if (!graph.isNodePresent(node)) {
-      this.currentSymbol = graph.addNode(node);
-      const nodeHTML = this.currentSymbol.draw();
-      this.element.appendChild(nodeHTML);
+    if (visible) {
+      const node = new Node(x, y, icon, visible);
+      snapping.snapSymbol(node);
+      if (!graph.isNodePresent(node)) {
+        this.currentSymbol = graph.addNode(node);
+        const nodeHTML = this.currentSymbol.draw();
+        this.element.appendChild(nodeHTML);
+        // console.log(nodeHTML);
+      }
     }
     this.currentSymbol = null;
   }
@@ -90,9 +95,9 @@ class Draw {
   pencilMouseUpEventListener(event) {
     if (event.button === 0) {
       const toSave = this.endEdge();
-      if(toSave){
+      if (toSave) {
         undoRedo.saveState(graph.getRecall());
-      };
+      }
       // SAVE STATE HERE
     }
   }
@@ -109,7 +114,7 @@ class Draw {
     utilities.highlightLines(Number(event.offsetX), Number(event.offsetY));
   }
 
-  eraserMouseUpEventListener(){}
+  eraserMouseUpEventListener() {}
   // startEdge() creates a new edge between two nodes
   startEdge(x, y) {
     this.node1 = utilities.isCloseLine(x, y);
@@ -133,8 +138,15 @@ class Draw {
   endEdge() {
     this.edge = new Edge(this.node1, this.node2);
     this.element.removeChild(this.element.lastChild);
-    let toSave = false
-    if (!utilities.deleteShortLine(this.node1.x,this.node1.y,this.node2.x,this.node2.y)){
+    let toSave = false;
+    if (
+      !utilities.deleteShortLine(
+        this.node1.x,
+        this.node1.y,
+        this.node2.x,
+        this.node2.y
+      )
+    ) {
       if (!graph.isEdgePresent(this.node1, this.node2)) {
         graph.addEdge(this.edge);
         if (!graph.isNodePresent(this.node1)) {
@@ -155,7 +167,7 @@ class Draw {
     this.edge = null;
     return toSave;
   }
-  
+
   // openIconPopup() sets the position of the icon popup
   openIconPopup(x, y) {
     // Set the position of the icon popup
@@ -183,7 +195,14 @@ class Draw {
     const nodes = curGraph.nodes;
 
     for (let i = 0; i < edges.length; i++) {
-      const distance = utilities.getPerpendicularDistance(x, y, edges[i].source.x, edges[i].source.y, edges[i].target.x, edges[i].target.y);
+      const distance = utilities.getPerpendicularDistance(
+        x,
+        y,
+        edges[i].source.x,
+        edges[i].source.y,
+        edges[i].target.x,
+        edges[i].target.y
+      );
       if (distance <= 15) {
         edgeToRemove.push(edges[i].edgeID);
         const node1ID = graph.getNodeId(edges[i].source);
@@ -200,7 +219,12 @@ class Draw {
     }
 
     for (let i = 0; i < nodes.length; i++) {
-      const distance = utilities.getPerpendicularDistance(x, y, nodes[i].x, nodes[i].y);
+      const distance = utilities.getPerpendicularDistance(
+        x,
+        y,
+        nodes[i].x,
+        nodes[i].y
+      );
       if (distance <= 15) {
         nodeToRemove.push(nodes[i].nodeID);
         break;
@@ -221,19 +245,19 @@ class Draw {
   }
 
   //Undo current state to previous state
-  undo(){
+  undo() {
     const prevState = JSON.parse(undoRedo.undo());
     graph.emptyGraph();
-    if(prevState){
+    if (prevState) {
       graph.resetGraph(prevState);
     }
   }
 
   //Redo Current state to next state
-  redo(){
+  redo() {
     const nextState = JSON.parse(undoRedo.redo());
-    
-    if(nextState){
+
+    if (nextState) {
       graph.emptyGraph();
       graph.resetGraph(nextState);
     }
