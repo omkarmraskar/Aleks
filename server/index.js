@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-// const port = 3000;
 const config = require("./config");
 const moleculeRouter = require("./routes/molecule");
 const db = require("./services/db");
@@ -8,6 +7,7 @@ const cors = require('cors');
 app.use(cors({
   origin: '*'
 }));
+
 app.use(express.json());
 app.use(
   express.urlencoded({

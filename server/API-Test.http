@@ -34,4 +34,3 @@ curl -i -X POST -H 'Accept: application/json' \
     ]
   },
   "Author": "Omkar"
-}'
