@@ -26,8 +26,8 @@ router.get("/:id", async function (req, res, next) {
 /* Create molecule */
 router.post("/create", async function (req, res, next) {
   try {
-    const {message, id} = await molecule.create(req.body)
-    res.json({message, id});
+    const { message, id } = await molecule.create(req.body);
+    res.json({ message, id });
   } catch (err) {
     console.error(`Error while creating Molecule`, err.message);
     next(err);
@@ -51,6 +51,43 @@ router.post("/delete/:id", async function (req, res, next) {
   } catch (err) {
     console.error(`Error while deleting molecule`, err.message);
     next(err);
+  }
+});
+// Check if the username already exists in the database
+router.post("/signup/check-username", async (req, res) => {
+  const exists = await molecule.checkUsername(req.body.username);
+  res.json({ exists });
+});
+
+// Add the new user to the database
+router.post("/signup/add-user", async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  const success = await molecule.addUser(username, password);
+  if (success) {
+    res.json({ success: true });
+  } else {
+    res.status(400).json({ error: "Username already exists." });
+  }
+});
+router.post("/login/get-salt", async (req, res) => {
+  const { username } = req.body;
+  try {
+    const salt = await molecule.getSalt(username);
+    res.json({ salt });
+  } catch (error) {
+    console.error("Error getting salt:", error);
+    res.status(500).json({ error });
+  }
+});
+router.post("/login/check-password", async (req, res) => {
+  const { username, hashedPassword } = req.body;
+  try {
+    const match = await molecule.checkPassword(username, hashedPassword);
+    res.json({ match });
+  } catch (error) {
+    console.error("Error checking password:", error);
+    res.status(500).json({ error });
   }
 });
 module.exports = router;

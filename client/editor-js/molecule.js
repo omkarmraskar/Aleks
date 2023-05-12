@@ -4,6 +4,7 @@ if (window.location.pathname === "/client/editor.html") {
   var urlParams = new URLSearchParams(window.location.search);
   var id = urlParams.get("id");
   var author = urlParams.get("author");
+  var loggedInUser = localStorage.getItem("username");
   var moleculeId = id;
   if (!id || !author) {
     // If 'id' parameter is not present, display an alert message and redirect to index.html

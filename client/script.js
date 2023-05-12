@@ -166,7 +166,7 @@ async function addRowInHtml(id, tool_name, author_name, date) {
   alink.innerHTML = tool_name;
   alink.setAttribute("class", "row-link");
   alink.setAttribute("data-row-id", id);
-  alink.setAttribute('data-author',author_name);
+  alink.setAttribute("data-author", author_name);
   alink.setAttribute("href", "#");
   td2.appendChild(alink);
   const td3 = document.createElement("td");
@@ -177,7 +177,7 @@ async function addRowInHtml(id, tool_name, author_name, date) {
   const button = document.createElement("button");
   button.setAttribute("class", "delete");
   button.setAttribute("data-row-id", id);
-  button.setAttribute('data-author',author_name);
+  button.setAttribute("data-author", author_name);
   button.innerHTML = "Delete";
   td5.appendChild(button);
   tr.appendChild(td1);
@@ -216,18 +216,11 @@ async function updateMoleculeIdInHtml(tool_name, author_name, date) {
 document.addEventListener("click", function (event) {
   // Check if the clicked element is a delete button
   if (event.target && event.target.matches("button.delete")) {
-    // Get the ID of the row to delete from the button's data attribute
     var rowId = event.target.dataset.rowId;
-    // console.log(rowId);
-    // Get the author of the row
     var rowAuthor = event.target.dataset.author;
-    // console.log(rowAuthor);
-    // Get the logged-in user
     var loggedInUser = localStorage.getItem("username");
-    // console.log(loggedInUser);
     // Only send the delete request if the author of the row is the same as the logged-in user
     if (rowAuthor.toLowerCase() === loggedInUser.toLowerCase()) {
-      // Construct the URL for the POST request
       var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
       // Show the loading icon
       var loadingIcon = document.getElementById("loading-icon");
@@ -272,7 +265,9 @@ document.addEventListener("click", function (event) {
     var url =
       window.location.origin +
       "/client/editor.html?id=" +
-      encodeURIComponent(rowId) + '&author=' + encodeURIComponent(rowAuthor);
+      encodeURIComponent(rowId) +
+      "&author=" +
+      encodeURIComponent(rowAuthor);
     // Open the URL in a new tab
     var tab = window.open(url, "_blank");
     tab.focus();
@@ -281,11 +276,8 @@ document.addEventListener("click", function (event) {
 // script.js
 function Username() {
   let username = localStorage.getItem("username");
-  if (!username) {
-    while (!username) {
-      username = window.prompt("Please enter your username:");
-    }
-    localStorage.setItem("username", username);
+  if (!username || username == null) {
+    window.location.href = "/client/login/login.html";
   }
 
   const usernameElement = window.document.createElement("div");
@@ -303,7 +295,7 @@ function Username() {
 
   logoutButton.addEventListener("click", function () {
     localStorage.removeItem("username");
-    window.location.reload();
+    window.location.href = "/client/login/login.html";
   });
 
   const body = window.document.querySelector("body");
