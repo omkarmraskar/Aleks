@@ -17,6 +17,7 @@ router.get("/:id", async function (req, res, next) {
   try {
     res.json(await molecule.getFromID(req.params.id));
     // console.log(res.json());
+
   } catch (err) {
     console.error(`Error while getting Molecule`, err.message);
     next(err);
@@ -24,6 +25,7 @@ router.get("/:id", async function (req, res, next) {
 });
 
 /* Create molecule */
+
 router.post("/create", async function (req, res, next) {
   try {
     const { message, id } = await molecule.create(req.body);
@@ -36,6 +38,7 @@ router.post("/create", async function (req, res, next) {
 
 /* Update Molecule */
 router.post("/update/:id", async function (req, res, next) {
+
   try {
     res.json(await molecule.update(req.params.id, req.body));
   } catch (err) {
@@ -45,6 +48,7 @@ router.post("/update/:id", async function (req, res, next) {
 });
 
 /* DELETE molecule */
+
 router.post("/delete/:id", async function (req, res, next) {
   try {
     res.json(await molecule.remove(req.params.id));

@@ -1,3 +1,4 @@
+
 const db = require("./db");
 const helper = require("../helper");
 const config = require("../config");
@@ -70,9 +71,9 @@ async function remove(id) {
   if (result.affectedRows) {
     message = "molecule deleted successfully";
   }
-
   return { message };
 }
+
 async function getFromID(id) {
   const test = `SELECT id, Tool_Name, Tool_JSON, Last_Updated, Author FROM molecule WHERE id=?`;
   const values = [id];
@@ -148,8 +149,8 @@ async function checkPassword(username, hashedPassword) {
 }
 module.exports = {
   getMultiple,
-  create,
   getFromID,
+  create,
   update,
   remove,
   checkUsername,
