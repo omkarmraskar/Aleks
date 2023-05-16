@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const molecule = require("../services/molecule");
-
+const middleware = require("../middleware/middleware")
 /* GET molecules */
 router.get("/", async function (req, res, next) {
   try {
