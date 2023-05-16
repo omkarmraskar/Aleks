@@ -5,7 +5,7 @@ if (window.location.pathname === "/client/editor.html") {
   var id = urlParams.get("id");
   var author = urlParams.get("author");
   
-  var loggedInUser = document.cookie.split(';')[1].split('=')[1];
+  // var loggedInUser = document.cookie.split(';')[1].split('=')[1];
   
   var moleculeId = id;
   if (!id || !author) {
@@ -27,7 +27,7 @@ updateButton.addEventListener("click", function (event) {
   var loadingIcon = document.getElementById("loading-icon");
   loadingIcon.style.display = "block";
   // Only send the fetch request if the author of the molecule is the same as the logged-in user
-  if (author.toLowerCase() === loggedInUser.toLowerCase()) {
+  // if (author.toLowerCase() === loggedInUser.toLowerCase()) {
     var url = serverUrl + "/molecule/update/" + encodeURIComponent(moleculeId);
     fetch(url, {
       method: "POST",
@@ -54,12 +54,12 @@ updateButton.addEventListener("click", function (event) {
         }
         console.error("There was a problem with the fetch operation:", error);
       });
-  } else {
+  // } else {
     // Show an alert message if the user is not authorized to update the molecule
-    alert("You are not authorized to update this molecule.");
+    // alert("You are not authorized to update this molecule.");
     // Hide the loading icon
     loadingIcon.style.display = "none";
-  }
+  // }
 });
 function loadData(moleculeId) {
   // Show the loading icon

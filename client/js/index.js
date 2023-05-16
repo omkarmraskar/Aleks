@@ -1,6 +1,6 @@
 var serverUrl = "http://localhost:3000";
 // function to create html form and table
-function addDivs() {
+function addDivs(author) {
   // create first div
   const div1 = document.createElement("div");
   div1.style.height = "25%";
@@ -13,14 +13,6 @@ function addDivs() {
   input.id = "Tool_Name";
   input.name = "Tool_Name";
   input.placeholder = "Enter tool name";
-  //create author field
-  const author = document.createElement("input");
-  author.type = "text";
-  author.id = "Author";
-  author.name = "Author";
-  author.placeholder = "Enter Author name";
-  author.style.marginLeft = "5px";
-  // create submit button
   const submit = document.createElement("button");
   submit.style.marginLeft = "5px";
   submit.innerHTML = "submit";
@@ -30,7 +22,7 @@ function addDivs() {
   submit.addEventListener("click", (event) => {
     event.preventDefault(); // prevent form submission
     const tool_name = input.value;
-    const author_name = author.value;
+    const author_name = author
     const date = new Date().toISOString().split("T")[0]; // get the current date
     updateMoleculeIdInHtml(tool_name, author_name, date);
     input.value = ""; // clear the input field
@@ -38,7 +30,6 @@ function addDivs() {
   });
   // // append input and submit to form
   form.appendChild(input);
-  form.appendChild(author);
   form.appendChild(submit);
   // append form to first div
   div1.appendChild(form);
@@ -53,6 +44,7 @@ function addDivs() {
   table.style.borderSpacing = "0";
   // create table headers
   const tr = document.createElement("tr");
+  tr.classList.add("table-head-row");
   const th1 = document.createElement("th");
   th1.textContent = "ID";
   const th2 = document.createElement("th");
@@ -60,7 +52,7 @@ function addDivs() {
   const th3 = document.createElement("th");
   th3.textContent = "Author";
   const th4 = document.createElement("th");
-  th4.textContent = "Date";
+  th4.textContent = "Last Updated";
   const th5 = document.createElement("th");
   th5.textContent = "Delete";
   // append headers to row
@@ -98,6 +90,7 @@ function loadHtmlFromDb() {
       // loop through the data and add it to the table
       for (let i = 0; i < data.length; i++) {
         const table = document.querySelector("table");
+        table.classList.add("table-light","mt-3"); // Add Bootstrap table-light class to the new row
         const date = data[i].Last_Updated.split("T")[0];
         const row = table.insertRow(i + 1);
         const cell1 = row.insertCell(0);
@@ -109,7 +102,7 @@ function loadHtmlFromDb() {
         cell2.innerHTML = `<a href="#" class="row-link" data-row-id="${data[i].id}" data-author="${data[i].Author}">${data[i].Tool_Name}</a>`;
         cell3.innerText = data[i].Author;
         cell4.innerText = date;
-        cell5.innerHTML = `<button class = "delete" data-row-id="${data[i].id}" data-author="${data[i].Author}">Delete</button>`;
+        cell5.innerHTML = `<button class = "btn btn-outline-danger delete" data-row-id="${data[i].id}" data-author="${data[i].Author}">Delete</button>`;
       }
       // Hide the loading icon
       loadingIcon.style.display = "none";
@@ -175,7 +168,7 @@ async function addRowInHtml(id, tool_name, author_name, date) {
   td4.textContent = date;
   const td5 = document.createElement("td");
   const button = document.createElement("button");
-  button.setAttribute("class", "delete");
+  button.setAttribute("class", "btn btn-outline-danger delete");
   button.setAttribute("data-row-id", id);
   button.setAttribute("data-author", author_name);
   button.innerHTML = "Delete";
@@ -218,9 +211,9 @@ document.addEventListener("click", function (event) {
   if (event.target && event.target.matches("button.delete")) {
     var rowId = event.target.dataset.rowId;
     var rowAuthor = event.target.dataset.author;
-    var loggedInUser = localStorage.getItem("username");
+    // var loggedInUser = localStorage.getItem("username");
     // Only send the delete request if the author of the row is the same as the logged-in user
-    if (rowAuthor.toLowerCase() === loggedInUser.toLowerCase()) {
+    // if (rowAuthor.toLowerCase() === loggedInUser.toLowerCase()) {
       var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
       // Show the loading icon
       var loadingIcon = document.getElementById("loading-icon");
@@ -243,10 +236,10 @@ document.addEventListener("click", function (event) {
         .catch((error) => {
           console.error("There was a problem with the fetch operation:", error);
         });
-    } else {
+    // } else {
       // Show an alert message if the user is not authorized to delete the row
-      alert("You are not authorized to delete this row.");
-    }
+      // alert("You are not authorized to delete this row.");
+    // }
   } else if (event.target && event.target.matches("a.row-link")) {
     // Prevent the default behavior of the link
     event.preventDefault();
@@ -275,20 +268,19 @@ document.addEventListener("click", function (event) {
 });
 
 function Username(username) {
-  if (!username || username == null) {
-    window.location.href = "/client/login.html";
-  }
-
   const usernameElement = window.document.createElement("div");
+  usernameElement.classList.add("me-2");
   usernameElement.innerHTML = `Logged in as: ${username}`;
 
   const logoutButton = window.document.createElement("button");
-  logoutButton.innerHTML = "Logout";
+  logoutButton.classList.add("btn", "btn-outline-danger", "ms-auto");
   logoutButton.style.marginLeft = "auto";
+  logoutButton.style.marginTop = "5px";
+  logoutButton.style.marginRight = "5px";
+  logoutButton.innerHTML = "Logout";
 
   const container = window.document.createElement("div");
-  container.style.display = "flex";
-  container.style.alignItems = "center";
+  container.classList.add("d-flex", "align-items-center");
   container.appendChild(usernameElement);
   container.appendChild(logoutButton);
 
@@ -302,28 +294,40 @@ function Username(username) {
   body.insertBefore(container, body.firstChild);
 }
 function fetchUsername() {
-  const token = getCookieValue("token");
-  const url = serverUrl + "/molecule/api/verify-token";
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
+  // const token = getCookieValue("token");
+  let token = getCookieValue("token");
+  if (token == null || token == "") {
+    window.location.href = "/client/login.html";
+  } else {
+    const url = serverUrl + "/molecule/api/verify-token";
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
     })
-    .then((data) => {
-      let username = data.username;
-      Username(username);
-    })
-    .catch((error) => {
-      console.error("Error verifying token:", error);
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        let username = data.username;
+        Username(username);
+        addDivs(username);
+      })
+      .catch((error) => {
+        if (error.message === "Failed to fetch") {
+          window.alert("Connection to server failed. Please try again later.");
+        }
+        console.error("Error verifying token:", error);
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        // window.location.href = "/client/login.html";
+        location.reload();
+      });
+  }
 }
 function getCookieValue(cookieName) {
   const cookies = document.cookie.split("; ");
@@ -336,4 +340,4 @@ function getCookieValue(cookieName) {
   return null;
 }
 fetchUsername();
-addDivs();
+

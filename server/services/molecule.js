@@ -148,7 +148,6 @@ async function checkPassword(username, hashedPassword) {
   }
 }
 async function newToken(username) {
-  console.log("Recieved New Token Request from: ", username);
   try {
     const token = jwt.sign({ username }, secret, { expiresIn: "1h" });
     return token;
