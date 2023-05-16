@@ -17,7 +17,6 @@ router.get("/:id", async function (req, res, next) {
   try {
     res.json(await molecule.getFromID(req.params.id));
     // console.log(res.json());
-
   } catch (err) {
     console.error(`Error while getting Molecule`, err.message);
     next(err);
@@ -38,7 +37,6 @@ router.post("/create", async function (req, res, next) {
 
 /* Update Molecule */
 router.post("/update/:id", async function (req, res, next) {
-
   try {
     res.json(await molecule.update(req.params.id, req.body));
   } catch (err) {
@@ -91,6 +89,26 @@ router.post("/login/check-password", async (req, res) => {
     res.json({ match });
   } catch (error) {
     console.error("Error checking password:", error);
+    res.status(500).json({ error });
+  }
+});
+router.post("/api/new-token", async (req, res) => {
+  const username = req.body.user;
+  try {
+    const token = await molecule.newToken(username);
+    res.json({ token });
+  } catch (error) {
+    console.error("Error creating new Token");
+    res.status(500).json({ error });
+  }
+});
+router.post("/api/verify-token", async (req, res) => {
+  const token = req.body.token;
+  try {
+    const username = await molecule.verifyToken(token);
+    return res.json({ username });
+  } catch (error) {
+    console.error("Error veryfing Token: ", error);
     res.status(500).json({ error });
   }
 });

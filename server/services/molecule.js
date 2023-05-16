@@ -1,9 +1,10 @@
-
 const db = require("./db");
 const helper = require("../helper");
 const config = require("../config");
 const mysql = require("mysql");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const secret = config.SECRET_KEY;
 
 async function getMultiple() {
   // const offset = helper.getOffset(page, config.listPerPage);
@@ -119,18 +120,17 @@ async function createUser(username, password) {
   await db.query(sql, [username, salt, hashedPassword]);
 }
 async function getSalt(username) {
-    const query = `SELECT salt FROM users WHERE username = ?`;
-    const [rows] = await db.query(query, [username]);
-    if (rows.length === 0) {
-      throw new Error("Username not found.");
-    }
-    const salt = rows.salt;
-    if (salt){
-      return salt;
-    }
-    else{
-      console.error("Error getting salt:");
-    }
+  const query = `SELECT salt FROM users WHERE username = ?`;
+  const [rows] = await db.query(query, [username]);
+  if (rows.length === 0) {
+    throw new Error("Username not found.");
+  }
+  const salt = rows.salt;
+  if (salt) {
+    return salt;
+  } else {
+    console.error("Error getting salt:");
+  }
 }
 async function checkPassword(username, hashedPassword) {
   try {
@@ -147,6 +147,30 @@ async function checkPassword(username, hashedPassword) {
     throw error;
   }
 }
+async function newToken(username) {
+  console.log("Recieved New Token Request from: ", username);
+  try {
+    const token = jwt.sign({ username }, secret, { expiresIn: "1h" });
+    return token;
+  } catch (error) {
+    console.error("Error Creating Token: ", error);
+  }
+}
+async function verifyToken(token) {
+  try {
+    const decodedToken = jwt.verify(token, secret);
+    const username = decodedToken.username;
+    return username;
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      console.error("Error verifying token:", error);
+      return res.status(401).json({ message: "Invalid token" });
+    } else {
+      console.error("Unexpected error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+}
 module.exports = {
   getMultiple,
   getFromID,
@@ -157,4 +181,6 @@ module.exports = {
   addUser,
   checkPassword,
   getSalt,
+  newToken,
+  verifyToken,
 };
