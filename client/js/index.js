@@ -220,7 +220,7 @@ document.addEventListener("click", function (event) {
     var rowAuthor = event.target.dataset.author;
     var loggedInUser = localStorage.getItem("username");
     // Only send the delete request if the author of the row is the same as the logged-in user
-    if (rowAuthor.toLowerCase() === loggedInUser.toLowerCase()) {
+    if (true) {
       var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
       // Show the loading icon
       var loadingIcon = document.getElementById("loading-icon");
@@ -241,6 +241,7 @@ document.addEventListener("click", function (event) {
           loadingIcon.style.display = "none";
         })
         .catch((error) => {
+          alert("You are not authorised");
           console.error("There was a problem with the fetch operation:", error);
         });
     } else {
@@ -302,28 +303,34 @@ function Username(username) {
   body.insertBefore(container, body.firstChild);
 }
 function fetchUsername() {
-  const token = getCookieValue("token");
-  const url = serverUrl + "/molecule/api/verify-token";
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
+  // const token = getCookieValue("token");
+  let token = getCookieValue("token");
+  if (token == null || token == "") {
+    window.location.href = "/client/login.html";
+  } else {
+    const url = serverUrl + "/molecule/api/verify-token";
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
     })
-    .then((data) => {
-      let username = data.username;
-      Username(username);
-    })
-    .catch((error) => {
-      console.error("Error verifying token:", error);
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        let username = data.username;
+        Username(username);
+      })
+      .catch((error) => {
+        window.location.href = "/client/login.html";
+        console.error("Error verifying token:", error);
+      });
+  }
 }
 function getCookieValue(cookieName) {
   const cookies = document.cookie.split("; ");

@@ -1,5 +1,10 @@
-const deleteFilter = (req, res, next) => {
+const helper = require("../helper")
+
+const authenticateUser = (req, res, next) => {
     const id = req.params.id;
+
+    const username = helper.getUsername();
+
     fetch(`http://localhost:3000/molecule/${id}`, {
         method : "GET",
     })
@@ -8,11 +13,11 @@ const deleteFilter = (req, res, next) => {
       })
       .then((data) => {
         const author = data.data[0].Author;
-        if(author === 'Omkar'){
+        if(author === username){
             next();
         }
         else{
-            const error = new Error("You are not authorized to delete this molecule.");
+            const error = new Error("You are not authorized.");
             error.status = 401; // Set the HTTP status code for the error response
             next(error); // Pass the error object to the next middleware
         }
@@ -20,5 +25,5 @@ const deleteFilter = (req, res, next) => {
 }
 
 module.exports = {
-    deleteFilter
+    authenticateUser
 }

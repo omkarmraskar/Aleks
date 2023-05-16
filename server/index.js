@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const app = express();
 const config = require("./config");
 const moleculeRouter = require("./routes/molecule");
@@ -7,7 +8,7 @@ const cors = require('cors');
 app.use(cors({
   origin: '*'
 }));
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(
   express.urlencoded({

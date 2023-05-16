@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const molecule = require("../services/molecule");
 const middleware = require("../middleware/middleware")
+const helper = require("../helper")
 /* GET molecules */
 router.get("/", async function (req, res, next) {
   try {
@@ -36,7 +37,7 @@ router.post("/create", async function (req, res, next) {
 });
 
 /* Update Molecule */
-router.post("/update/:id", async function (req, res, next) {
+router.post("/update/:id", middleware.authenticateUser, async function (req, res, next) {
   try {
     res.json(await molecule.update(req.params.id, req.body));
   } catch (err) {
@@ -47,7 +48,7 @@ router.post("/update/:id", async function (req, res, next) {
 
 /* DELETE molecule */
 
-router.post("/delete/:id", async function (req, res, next) {
+router.post("/delete/:id", middleware.authenticateUser, async function (req, res, next) {
   try {
     res.json(await molecule.remove(req.params.id));
   } catch (err) {
@@ -106,6 +107,7 @@ router.post("/api/verify-token", async (req, res) => {
   const token = req.body.token;
   try {
     const username = await molecule.verifyToken(token);
+    helper.setUsername(username);
     return res.json({ username });
   } catch (error) {
     console.error("Error veryfing Token: ", error);
