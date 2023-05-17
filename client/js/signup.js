@@ -1,3 +1,8 @@
+if (getCookieValue("token")){
+  alert("Logout from current user required befor Signup.");
+  window.location.href = "/index";
+}
+
 // Handle form submission
 function handleSubmit(event) {
   // Show the loading icon
@@ -23,7 +28,7 @@ function handleSubmit(event) {
         loadingIcon.style.display = "none";
         
         alert("Username already exists. Please go to the login page.");
-        window.location.href = "/client/login.html";
+        window.location.href = "/login";
       } else {
         // Add the new user to the database
         fetch(serverUrl + "/molecule/signup/add-user", {

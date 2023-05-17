@@ -22,7 +22,7 @@ function addDivs(author) {
   submit.addEventListener("click", (event) => {
     event.preventDefault(); // prevent form submission
     const tool_name = input.value;
-    const author_name = author
+    const author_name = author;
     const date = new Date().toISOString().split("T")[0]; // get the current date
     updateMoleculeIdInHtml(tool_name, author_name, date);
     input.value = ""; // clear the input field
@@ -90,7 +90,7 @@ function loadHtmlFromDb() {
       // loop through the data and add it to the table
       for (let i = 0; i < data.length; i++) {
         const table = document.querySelector("table");
-        table.classList.add("table-light","mt-3"); // Add Bootstrap table-light class to the new row
+        table.classList.add("table-light", "mt-3"); // Add Bootstrap table-light class to the new row
         const date = data[i].Last_Updated.split("T")[0];
         const row = table.insertRow(i + 1);
         const cell1 = row.insertCell(0);
@@ -210,36 +210,32 @@ document.addEventListener("click", function (event) {
   // Check if the clicked element is a delete button
   if (event.target && event.target.matches("button.delete")) {
     var rowId = event.target.dataset.rowId;
-    var rowAuthor = event.target.dataset.author;
-    // var loggedInUser = localStorage.getItem("username");
-    // Only send the delete request if the author of the row is the same as the logged-in user
-    // if (rowAuthor.toLowerCase() === loggedInUser.toLowerCase()) {
-      var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
-      // Show the loading icon
-      var loadingIcon = document.getElementById("loading-icon");
-      loadingIcon.style.display = "block";
-      // Send the POST request
-      fetch(url, {
-        method: "POST",
+
+    var url = serverUrl + "/molecule/delete/" + encodeURIComponent(rowId);
+    // Show the loading icon
+    var loadingIcon = document.getElementById("loading-icon");
+    loadingIcon.style.display = "block";
+    // Send the POST request
+    fetch(url, {
+      method: "POST",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        // Remove the row from the table
+        var row = event.target.parentElement.parentElement;
+        row.parentNode.removeChild(row);
+        alert("Deleted Row successfully");
+        // Hide the loading icon
+        loadingIcon.style.display = "none";
       })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          // Remove the row from the table
-          var row = event.target.parentElement.parentElement;
-          row.parentNode.removeChild(row);
-          alert("Deleted Row successfully");
-          // Hide the loading icon
-          loadingIcon.style.display = "none";
-        })
-        .catch((error) => {
-          console.error("There was a problem with the fetch operation:", error);
-        });
-    // } else {
-      // Show an alert message if the user is not authorized to delete the row
-      // alert("You are not authorized to delete this row.");
-    // }
+      .catch((error) => {
+        alert("You are not authorised");
+        // Hide the loading icon
+        loadingIcon.style.display = "none";
+        console.error("There was a problem with the fetch operation:", error);
+      });
   } else if (event.target && event.target.matches("a.row-link")) {
     // Prevent the default behavior of the link
     event.preventDefault();
@@ -257,10 +253,8 @@ document.addEventListener("click", function (event) {
     // Construct the URL for the new webpage with the ID as a GET parameter
     var url =
       window.location.origin +
-      "/client/editor.html?id=" +
-      encodeURIComponent(rowId) +
-      "&author=" +
-      encodeURIComponent(rowAuthor);
+      "/editor?id=" +
+      encodeURIComponent(rowId)
     // Open the URL in a new tab
     var tab = window.open(url, "_blank");
     tab.focus();
@@ -287,17 +281,16 @@ function Username(username) {
   logoutButton.addEventListener("click", function () {
     // Remove the token cookies
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "/client/login.html";
+    window.location.href = "/login";
   });
 
   const body = window.document.querySelector("body");
   body.insertBefore(container, body.firstChild);
 }
 function fetchUsername() {
-  // const token = getCookieValue("token");
   let token = getCookieValue("token");
   if (token == null || token == "") {
-    window.location.href = "/client/login.html";
+    window.location.href = "/login";
   } else {
     const url = serverUrl + "/molecule/api/verify-token";
     fetch(url, {
@@ -319,25 +312,13 @@ function fetchUsername() {
         addDivs(username);
       })
       .catch((error) => {
-        if (error.message === "Failed to fetch") {
-          window.alert("Connection to server failed. Please try again later.");
-        }
+        window.location.href = "/login";
         console.error("Error verifying token:", error);
-        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        // window.location.href = "/client/login.html";
+        document.cookie =
+          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         location.reload();
       });
   }
 }
-function getCookieValue(cookieName) {
-  const cookies = document.cookie.split("; ");
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].split("=");
-    if (cookie[0] === cookieName) {
-      return cookie[1];
-    }
-  }
-  return null;
-}
-fetchUsername();
 
+fetchUsername();
