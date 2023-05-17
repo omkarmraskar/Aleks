@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const molecule = require("../services/molecule");
-const middleware = require("../middleware/middleware")
-const helper = require("../helper")
+const middleware = require("../middleware/middleware");
+const helper = require("../helper");
 /* GET molecules */
 router.get("/", async function (req, res, next) {
   try {
@@ -37,25 +37,33 @@ router.post("/create", async function (req, res, next) {
 });
 
 /* Update Molecule */
-router.post("/update/:id", middleware.authenticateUser, async function (req, res, next) {
-  try {
-    res.json(await molecule.update(req.params.id, req.body));
-  } catch (err) {
-    console.error(`Error while updating molecule`, err.message);
-    next(err);
+router.post(
+  "/update/:id",
+  middleware.authenticateUser,
+  async function (req, res, next) {
+    try {
+      res.json(await molecule.update(req.params.id, req.body));
+    } catch (err) {
+      console.error(`Error while updating molecule`, err.message);
+      next(err);
+    }
   }
-});
+);
 
 /* DELETE molecule */
 
-router.post("/delete/:id", middleware.authenticateUser, async function (req, res, next) {
-  try {
-    res.json(await molecule.remove(req.params.id));
-  } catch (err) {
-    console.error(`Error while deleting molecule`, err.message);
-    next(err);
+router.post(
+  "/delete/:id",
+  middleware.authenticateUser,
+  async function (req, res, next) {
+    try {
+      res.json(await molecule.remove(req.params.id));
+    } catch (err) {
+      console.error(`Error while deleting molecule`, err.message);
+      next(err);
+    }
   }
-});
+);
 // Check if the username already exists in the database
 router.post("/signup/check-username", async (req, res) => {
   const exists = await molecule.checkUsername(req.body.username);

@@ -1,3 +1,8 @@
+if (getCookieValue("token")){
+  alert("Logout from current user required befor loggin in.");
+  window.location.href = "/index";
+}
+
 const loginForm = document.getElementById("login-form");
 var serverUrl = "http://localhost:3000";
 loginForm.addEventListener("submit", async (event) => {
@@ -14,7 +19,7 @@ loginForm.addEventListener("submit", async (event) => {
 
   if (!exists) {
     alert("Username does not exist. Please sign up first.");
-    window.location.href = "/client/signup.html";
+    window.location.href = "/signup";
     return;
   }
 
@@ -29,7 +34,7 @@ loginForm.addEventListener("submit", async (event) => {
     }
     // Store the token in cookies
     document.cookie = `token=${token}; path=/`;
-    window.location.href = "/client/index.html";
+    window.location.href = "/index";
   } else {
     // Hide the loading icon
     loadingIcon.style.display = "none";

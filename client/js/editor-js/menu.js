@@ -13,23 +13,23 @@ class Menu {
     this.redo = document.createElement('button');
     this.createButtons();
     this.pencilSelect.classList.add("clicked");
-    editor.element.setAttribute("style", `cursor: url(icons/pencil.svg), auto`);
+    editor.element.setAttribute("style", `cursor: url(pencil.svg), auto`);
     this.setEventListener();
   }
 
   createButtons(){
     
     this.clearButton.setAttribute('id', 'clear-board');
-    this.clearButton.setAttribute('src', 'icons/clear-all.png');
+    this.clearButton.setAttribute('src', 'clear-all.png');
 
     this.pencilSelect.setAttribute('id', 'pencil-select');
     const pencilImg = document.createElement('img');
-    pencilImg.setAttribute('src', 'icons/pencil.svg');
+    pencilImg.setAttribute('src', 'pencil.svg');
     this.pencilSelect.appendChild(pencilImg);
     
     this.eraseSelect.setAttribute('id', 'eraser-select');
     const eraserImg = document.createElement('img');
-    eraserImg.setAttribute('src', 'icons/eraser.svg');
+    eraserImg.setAttribute('src', 'eraser.svg');
     this.eraseSelect.appendChild(eraserImg);
 
     const switchTool = document.createElement('div');
@@ -40,11 +40,11 @@ class Menu {
 
     this.undo.setAttribute('id', 'undo-button');
     const undoImg = document.createElement('img');
-    undoImg.setAttribute('src', 'icons/undo.png');
+    undoImg.setAttribute('src', 'undo.png');
     this.undo.appendChild(undoImg);
     this.redo.setAttribute('id', 'redo-button');
     const redoImg = document.createElement('img');
-    redoImg.setAttribute('src', 'icons/redo.jpg');
+    redoImg.setAttribute('src', 'redo.jpg');
     this.redo.appendChild(redoImg);
     const undo_redo = document.createElement('div');
     undo_redo.setAttribute('id', 'undo-redo');
@@ -116,7 +116,7 @@ class Menu {
       this.eraseSelect.classList.add("clicked");
       editor.element.setAttribute(
         "style",
-        `cursor: url(icons/eraser.svg), auto`
+        `cursor: url(eraser.svg), auto`
       );
       editor.onEvent("eraser");
     });
@@ -127,7 +127,7 @@ class Menu {
       this.eraseSelect.classList.remove("clicked");
       editor.element.setAttribute(
         "style",
-        `cursor: url(icons/pencil.svg), auto`
+        `cursor: url(pencil.svg), auto`
       );
       editor.onEvent("pencil");
     });

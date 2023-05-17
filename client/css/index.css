@@ -38,3 +38,13 @@ input[type="submit"] {
 .row-link.active {
   color: red;
 }
+body div{
+  margin: 5px;
+}
+.table-head-row th{
+  text-align: center;
+  width: calc(100% / 5);
+}
+body{
+  background-color: #F0FFFF;
+}
