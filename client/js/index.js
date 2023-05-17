@@ -236,6 +236,7 @@ document.addEventListener("click", function (event) {
         loadingIcon.style.display = "none";
         console.error("There was a problem with the fetch operation:", error);
       });
+
   } else if (event.target && event.target.matches("a.row-link")) {
     // Prevent the default behavior of the link
     event.preventDefault();
