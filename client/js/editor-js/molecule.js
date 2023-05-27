@@ -23,10 +23,13 @@ function updateMolecule(event) {
   var loadingIcon = document.getElementById("loading-icon");
   loadingIcon.style.display = "block";
   var url = serverUrl + "/molecule/update/" + encodeURIComponent(id);
+  const token = getCookieValue("token");
+  
   fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `${token}`
     },
     body: JSON.stringify(graph.getRecall()),
   })
@@ -90,5 +93,14 @@ function loadData(id) {
       loadingIcon.style.display = "none";
     });
 }
-
+function getCookieValue(cookieName) {
+  const cookies = document.cookie.split("; ");
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].split("=");
+    if (cookie[0] === cookieName) {
+      return cookie[1];
+    }
+  }
+  return null;
+}
 loadData(id);

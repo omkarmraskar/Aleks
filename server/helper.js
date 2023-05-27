@@ -1,3 +1,8 @@
+
+const config = require("./config");
+const jwt = require("jsonwebtoken");
+const secret = config.SECRET_KEY;
+
 function getOffset(currentPage = 1, listPerPage) {
 
   return (currentPage - 1) * [listPerPage];
@@ -16,7 +21,9 @@ function setUsername(value) {
   username = value;
 }
 
-function getUsername() {
+function getUsername(token) {
+  const decodedToken = jwt.verify(token, secret);
+  const username = decodedToken.username;
   return username;
 }
 

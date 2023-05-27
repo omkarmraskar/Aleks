@@ -1,9 +1,12 @@
 
 const helper = require("../helper");
+const verifyToken = require("../services/molecule")
+
 
 const authenticateUser = (req, res, next) => {
   const id = req.params.id;
-  const username = helper.getUsername();
+  const token = req.headers.authorization;
+  const username = helper.getUsername(token);
   fetch(`http://localhost:3000/molecule/${id}`, {
     method: "GET",
   })
@@ -24,6 +27,17 @@ const authenticateUser = (req, res, next) => {
     .catch((error) => {
       next(error); // Pass the error object to the next middleware
     });
+};
+
+async function getUsername(token){
+  try{
+    const decodedToken = await verifyToken.verifyToken(token);
+    const username = decodedToken
+    return username;
+  }
+  catch(error){
+    console.error("error getting username", error)
+  }
 };
 
 module.exports = {

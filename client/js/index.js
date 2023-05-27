@@ -216,8 +216,13 @@ document.addEventListener("click", function (event) {
     var loadingIcon = document.getElementById("loading-icon");
     loadingIcon.style.display = "block";
     // Send the POST request
+    const token = getCookieValue("token");
+    console.log(token);
     fetch(url, {
       method: "POST",
+      headers:{
+        "Authorization": `${token}`
+      }
     })
       .then((response) => {
         if (!response.ok) {
